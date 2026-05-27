@@ -1,0 +1,1 @@
+ALTER TABLE public.broadcasts ADD COLUMN IF NOT EXISTS audience_type text NOT NULL DEFAULT 'b2c';

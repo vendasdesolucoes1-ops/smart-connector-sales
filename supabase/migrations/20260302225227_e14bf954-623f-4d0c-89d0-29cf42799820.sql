@@ -1,0 +1,1 @@
+ALTER TABLE public.organizations ADD COLUMN handoff_number text DEFAULT NULL;

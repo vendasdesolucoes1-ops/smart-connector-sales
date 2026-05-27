@@ -1,0 +1,1 @@
+UPDATE ai_scenarios SET behavior = jsonb_set(behavior, '{max_messages}', '30') WHERE org_id = '16223d95-7489-4315-8a96-e42634f3411e';

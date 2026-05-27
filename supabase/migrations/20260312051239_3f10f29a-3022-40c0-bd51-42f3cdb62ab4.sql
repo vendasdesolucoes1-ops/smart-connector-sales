@@ -1,0 +1,1 @@
+ALTER TABLE public.crm_stages ADD COLUMN IF NOT EXISTS stage_key TEXT;

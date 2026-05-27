@@ -1,0 +1,1 @@
+ALTER TABLE public.organizations ADD COLUMN handoff_auto_stages text[] DEFAULT '{}'::text[];

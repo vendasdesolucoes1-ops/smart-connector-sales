@@ -1,0 +1,18 @@
+name: CRM Pipeline Automation
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'  # a cada 10 minutos
+  workflow_dispatch:          # permite rodar manualmente
+
+jobs:
+  run-automation:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger pipeline automation
+        run: |
+          curl -X POST \
+            "https://akstlpiqjvgbjjnawqfn.supabase.co/functions/v1/crm-pipeline-automation" \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" \
+            -d '{}'
