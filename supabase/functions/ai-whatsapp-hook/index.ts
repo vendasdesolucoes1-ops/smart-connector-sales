@@ -474,7 +474,7 @@ O lead está respondendo à mensagem enviada pelo disparo. Continue naturalmente
       .eq("instance_name", instanceName)
       .eq("remote_jid", remoteJid)
       .order("created_at", { ascending: false })
-      .limit(10);
+      .limit(Math.min(contextWindow || 20, 30));
 
     if (historyMsgs && historyMsgs.length > 0) {
       const sorted = [...historyMsgs].reverse();
