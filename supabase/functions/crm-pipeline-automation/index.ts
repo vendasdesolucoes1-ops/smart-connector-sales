@@ -9,6 +9,18 @@ const corsHeaders = {
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
+  const AUTOMATION_SECRET = Deno.env.get("AUTOMATION_SECRET") || "";
+  const internalSecret = req.headers.get("x-automation-secret") || "";
+  const authHeader = req.headers.get("Authorization") || "";
+  const isAuthorized = (AUTOMATION_SECRET && internalSecret === AUTOMATION_SECRET)
+    || authHeader.startsWith("Bearer ");
+  if (!isAuthorized) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { ...corsHeaders, "Content-Type": "application/json" }
+    });
+  }
+
   try {
     const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
