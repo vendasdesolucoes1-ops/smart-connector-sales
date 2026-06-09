@@ -160,7 +160,7 @@ export default function Index() {
       }
     };
     fetchAll();
-  }, [profile?.org_id]);
+  }, [profile?.org_id, profileLoading]);
 
   const conversionRate = stats.leads > 0 ? ((stats.converted / stats.leads) * 100).toFixed(1) : "0";
 
