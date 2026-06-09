@@ -9,6 +9,18 @@ const corsHeaders = {
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
+  const AUTOMATION_SECRET = Deno.env.get("AUTOMATION_SECRET") || "";
+  const internalSecret = req.headers.get("x-automation-secret") || "";
+  const authHeader = req.headers.get("Authorization") || "";
+  const isAuthorized = (AUTOMATION_SECRET && internalSecret === AUTOMATION_SECRET)
+    || authHeader.startsWith("Bearer ");
+  if (!isAuthorized) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { ...corsHeaders, "Content-Type": "application/json" }
+    });
+  }
+
   try {
     const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -479,7 +491,7 @@ Responda APENAS em JSON válido.`;
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      model: "google/gemini-3-flash-preview",
+      model: "google/gemini-2.5-flash",
       messages: [
         {
           role: "system",
@@ -566,7 +578,7 @@ Retorne APENAS o texto da mensagem, sem aspas nem formatação.`;
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      model: "google/gemini-3-flash-preview",
+      model: "google/gemini-2.5-flash",
       messages: [
         { role: "system", content: "Você é um SDR top performer. Escreva mensagens curtas, personalizadas e que geram resposta." },
         { role: "user", content: prompt },
@@ -615,7 +627,7 @@ Retorne JSON: { "qualified": boolean, "score": 0-100, "reason": "motivo em 1 fra
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      model: "google/gemini-3-flash-preview",
+      model: "google/gemini-2.5-flash",
       messages: [
         { role: "system", content: "Você é um analista de qualificação de leads. Retorne APENAS JSON válido." },
         { role: "user", content: prompt },

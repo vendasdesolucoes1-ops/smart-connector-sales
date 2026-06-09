@@ -97,6 +97,13 @@ Deno.serve(async (req) => {
     if (bErr || !broadcast) return json({ error: "Broadcast not found" }, 404);
     if (broadcast.status !== "running") return json({ error: "Broadcast is not in running status" }, 400);
 
+    // Circuit breaker: max 20 re-invocations per broadcast
+    if ((broadcast.retry_count ?? 0) >= 20) {
+      await supabase.from("broadcasts").update({ status: "paused" }).eq("id", broadcast_id);
+      return json({ error: "Circuit breaker: max re-invocations reached", retry_count: broadcast.retry_count }, 429);
+    }
+    await supabase.from("broadcasts").update({ retry_count: (broadcast.retry_count ?? 0) + 1 }).eq("id", broadcast_id);
+
     if (!EVOLUTION_API_URL || !EVOLUTION_API_KEY) {
       return json({ error: "Evolution API not configured" }, 500);
     }
@@ -612,6 +619,13 @@ ${!useEmoji ? "- NUNCA use emojis. ZERO emojis." : ""}
 
     // Update counts
     await updateBroadcastCounts(supabase, broadcast_id);
+
+    // Circuit breaker: pause if failure rate > 50% in this batch
+    const totalProcessed = sentCount + failCount;
+    if (totalProcessed > 0 && failCount / totalProcessed > 0.5) {
+      await supabase.from("broadcasts").update({ status: "paused" }).eq("id", broadcast_id);
+      return json({ paused: true, reason: "high_failure_rate", failCount, sentCount });
+    }
 
     // Check remaining
     const { count: pendingCount } = await supabase
