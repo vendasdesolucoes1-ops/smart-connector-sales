@@ -393,6 +393,7 @@ O lead está respondendo à mensagem enviada pelo disparo. Continue naturalmente
       maxMessages, actualBotCount, activeEngagement, hidePrices,
       companyContext, knowledgeContext, broadcastContext,
       repeatedPhrases, includeSchedulingCommands: true,
+      prefix_override: behavior.prefix_override,
     });
 
     // ---- Build conversation messages ----

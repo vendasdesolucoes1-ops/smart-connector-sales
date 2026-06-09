@@ -92,6 +92,7 @@ serve(async (req) => {
         hidePrices: behavior.hide_prices === true,
         companyContext,
         includeSchedulingCommands: true,
+        prefix_override: behavior.prefix_override,
       });
 
       const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");

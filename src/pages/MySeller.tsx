@@ -205,8 +205,8 @@ export default function MySeller() {
     const activeEngagement = scenario.behavior?.active_engagement ?? true;
     const hidePrices = scenario.behavior?.hide_prices ?? false;
 
-    // Anti-hallucination prefix
-    const antiHallucinationPrefix = `=== REGRA NÚMERO 1 (ACIMA DE TUDO — INVIOLÁVEL) ===
+    // Anti-hallucination prefix (use custom if configured, else built-in default)
+    const defaultPrefix = `=== REGRA NÚMERO 1 (ACIMA DE TUDO — INVIOLÁVEL) ===
 Você é um vendedor que SÓ pode falar sobre o que está EXPLICITAMENTE descrito neste prompt.
 PROIBIÇÕES ABSOLUTAS:
 - Se um produto, serviço, equipamento, processo ou detalhe técnico NÃO aparece LITERALMENTE nos dados abaixo, ele NÃO EXISTE. Ponto final.
@@ -218,8 +218,10 @@ PROIBIÇÕES ABSOLUTAS:
 - NUNCA comece a resposta repetindo a saudação do disparo. O cliente JÁ recebeu a saudação. Vá direto ao ponto.
 ${!useEmoji ? "- NUNCA use emojis. ZERO emojis. Nenhum emoji de qualquer tipo." : ""}
 === FIM DA REGRA NÚMERO 1 ===
-
 `;
+    const antiHallucinationPrefix = (scenario.behavior?.prefix_override !== undefined && scenario.behavior.prefix_override !== ""
+      ? scenario.behavior.prefix_override
+      : defaultPrefix) + "\n\n";
 
     // Behavior rules
     const behaviorParts: string[] = [];
@@ -818,6 +820,36 @@ ${!useEmoji ? "- ZERO EMOJIS. Remova qualquer emoji antes de enviar." : ""}
                         <p className="text-[10px] text-muted-foreground">Separe por vírgula. Ao detectar, a IA transfere para atendimento humano.</p>
                       </div>
                     </div>
+                  </CollapsibleContent>
+                </Collapsible>
+
+                {/* Prefix override (advanced) */}
+                <Collapsible>
+                  <CollapsibleTrigger asChild>
+                    <button className="w-full flex items-center justify-between p-2 rounded-lg hover:bg-secondary/50 transition-colors">
+                      <span className="text-xs font-medium flex items-center gap-1.5">
+                        <Shield className="h-3.5 w-3.5 text-warning" /> Prefixo de Comportamento
+                        <span className="text-[9px] text-muted-foreground bg-secondary px-1.5 py-0.5 rounded">Avançado</span>
+                      </span>
+                      <ChevronDown className="h-3 w-3 text-muted-foreground" />
+                    </button>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className="pt-2 space-y-2">
+                    <p className="text-[10px] text-muted-foreground leading-relaxed">
+                      Instrução invisível que é adicionada <strong>antes</strong> do prompt do cenário.
+                      Controla regras fundamentais como anti-alucinação, uso de emojis e limites de conteúdo.
+                      Deixe em branco para usar o padrão do sistema.
+                    </p>
+                    <Textarea
+                      value={scenario.behavior?.prefix_override ?? ""}
+                      onChange={(e) => updateScenario(scenario.id, "behavior", { ...scenario.behavior, prefix_override: e.target.value })}
+                      placeholder={`(padrão do sistema)\n\nFONTES AUTORIZADAS: Responda APENAS com informações presentes no system prompt...\n\nLeave blank to use the system default.`}
+                      rows={5}
+                      className="text-xs resize-none font-mono"
+                    />
+                    <p className="text-[10px] text-warning/80">
+                      ⚠️ Modificar este campo pode afetar o comportamento de segurança do agente. Use apenas se souber o que está fazendo.
+                    </p>
                   </CollapsibleContent>
                 </Collapsible>
 
