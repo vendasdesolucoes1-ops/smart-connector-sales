@@ -94,9 +94,13 @@ export function buildSystemPrompt(params: BuildSystemPromptParams): string {
   let finalCompany = companyContext;
 
   if (originalSize > maxTotalChars) {
-    if (finalKnowledge.length > 2000) finalKnowledge = finalKnowledge.substring(0, 2000) + "\n--- (truncado) ---";
+    // Compress company context first (less critical than RAG knowledge)
     if (coreSize + finalKnowledge.length + finalCompany.length > maxTotalChars && finalCompany.length > 1000) {
       finalCompany = finalCompany.substring(0, 1000) + "\n--- (truncado) ---";
+    }
+    // Only truncate RAG knowledge if still over limit after compressing company context
+    if (coreSize + finalKnowledge.length + finalCompany.length > maxTotalChars && finalKnowledge.length > 2000) {
+      finalKnowledge = finalKnowledge.substring(0, 2000) + "\n--- (truncado) ---";
     }
     console.warn("System prompt context truncated:", { originalSize, finalSize: coreSize + finalKnowledge.length + finalCompany.length });
   }
