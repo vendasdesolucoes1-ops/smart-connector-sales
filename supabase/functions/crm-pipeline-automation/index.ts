@@ -491,7 +491,7 @@ Responda APENAS em JSON válido.`;
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      model: "google/gemini-3-flash-preview",
+      model: "google/gemini-2.5-flash",
       messages: [
         {
           role: "system",
@@ -578,7 +578,7 @@ Retorne APENAS o texto da mensagem, sem aspas nem formatação.`;
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      model: "google/gemini-3-flash-preview",
+      model: "google/gemini-2.5-flash",
       messages: [
         { role: "system", content: "Você é um SDR top performer. Escreva mensagens curtas, personalizadas e que geram resposta." },
         { role: "user", content: prompt },
@@ -627,7 +627,7 @@ Retorne JSON: { "qualified": boolean, "score": 0-100, "reason": "motivo em 1 fra
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      model: "google/gemini-3-flash-preview",
+      model: "google/gemini-2.5-flash",
       messages: [
         { role: "system", content: "Você é um analista de qualificação de leads. Retorne APENAS JSON válido." },
         { role: "user", content: prompt },
