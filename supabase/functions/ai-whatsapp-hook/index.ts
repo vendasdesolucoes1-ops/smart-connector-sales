@@ -11,6 +11,18 @@ const corsHeaders = {
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
+  const WEBHOOK_SECRET = Deno.env.get("EVOLUTION_WEBHOOK_SECRET") || "";
+  if (WEBHOOK_SECRET) {
+    const receivedSecret = req.headers.get("x-webhook-secret") || "";
+    if (receivedSecret !== WEBHOOK_SECRET) {
+      console.warn("Unauthorized webhook attempt:", req.headers.get("x-forwarded-for"));
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" }
+      });
+    }
+  }
+
   try {
     const body = await req.json();
     if (body.event !== "messages.upsert") {
