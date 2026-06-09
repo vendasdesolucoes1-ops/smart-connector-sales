@@ -80,30 +80,30 @@ serve(async (req) => {
       return new Response(JSON.stringify({ status: "already_processed" }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
-    // ---- Check if any scenario is enabled for this org ----
-    const { data: scenarios } = await supabaseAdmin
-      .from("ai_scenarios")
-      .select("*")
-      .eq("org_id", orgId)
-      .eq("enabled", true);
+    // ---- Parallel fetch: scenarios, leads, conversation tracker ----
+    const phone = remoteJid.replace("@s.whatsapp.net", "");
+
+    const [
+      { data: scenarios },
+      { data: matchedLeads },
+      { data: existingConv },
+    ] = await Promise.all([
+      supabaseAdmin.from("ai_scenarios").select("*").eq("org_id", orgId).eq("enabled", true),
+      supabaseAdmin.from("leads_raw").select("id, name").eq("org_id", orgId)
+        .or(`phone.ilike.%${phone}%,phone.ilike.%${phone.slice(-8)}%`).limit(5),
+      supabaseAdmin.from("conversation_tracker")
+        .select("id, customer_msg_count, scenario_key, detected_audience")
+        .eq("org_id", orgId).eq("instance_name", instanceName).eq("remote_jid", remoteJid)
+        .maybeSingle(),
+    ]);
 
     if (!scenarios || scenarios.length === 0) {
       return new Response(JSON.stringify({ ignored: true, reason: "no active scenarios" }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
     // ---- Determine scenario ----
-    const phone = remoteJid.replace("@s.whatsapp.net", "");
     let scenarioKey = "organic_inbound"; // default
     let detectedAudience = ""; // b2b or b2c from broadcast
-
-    // Check if lead came from a broadcast
-    // Use .limit(1) instead of .maybeSingle() to handle duplicate phone numbers
-    const { data: matchedLeads } = await supabaseAdmin
-      .from("leads_raw")
-      .select("id, name")
-      .eq("org_id", orgId)
-      .or(`phone.ilike.%${phone}%,phone.ilike.%${phone.slice(-8)}%`)
-      .limit(5);
 
     const matchedLead = matchedLeads?.[0] || null;
 
@@ -162,15 +162,7 @@ O lead está respondendo à mensagem enviada pelo disparo. Continue naturalmente
     const outOfHoursMessage = behavior.out_of_hours_message || "";
     const handoffKeywords: string[] = behavior.handoff_keywords || [];
 
-    // ---- Track conversation ----
-    const { data: existingConv } = await supabaseAdmin
-      .from("conversation_tracker")
-      .select("id, customer_msg_count, scenario_key, detected_audience")
-      .eq("org_id", orgId)
-      .eq("instance_name", instanceName)
-      .eq("remote_jid", remoteJid)
-      .maybeSingle();
-
+    // ---- Track conversation (existingConv already fetched in parallel above) ----
     let customerMsgCount = 0;
 
     if (existingConv) {
