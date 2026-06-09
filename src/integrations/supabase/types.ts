@@ -373,6 +373,7 @@ export type Database = {
           org_id: string
           read_count: number | null
           replied_count: number | null
+          retry_count: number | null
           scenario_key: string | null
           scheduled_at: string | null
           segment_custom_filter: Json | null
@@ -413,6 +414,7 @@ export type Database = {
           org_id: string
           read_count?: number | null
           replied_count?: number | null
+          retry_count?: number | null
           scenario_key?: string | null
           scheduled_at?: string | null
           segment_custom_filter?: Json | null
@@ -453,6 +455,7 @@ export type Database = {
           org_id?: string
           read_count?: number | null
           replied_count?: number | null
+          retry_count?: number | null
           scenario_key?: string | null
           scheduled_at?: string | null
           segment_custom_filter?: Json | null
@@ -1334,6 +1337,8 @@ export type Database = {
           title: string
         }[]
       }
+      show_limit: { Args: never; Returns: number }
+      show_trgm: { Args: { "": string }; Returns: string[] }
     }
     Enums: {
       app_role: "admin" | "member"
