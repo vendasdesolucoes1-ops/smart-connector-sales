@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { registerContact } from "../_shared/contact-cooldown.ts";
+import { fetchWithTimeout } from "../_shared/fetch-with-timeout.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -728,11 +729,11 @@ O lead está respondendo à mensagem enviada pelo disparo. Continue naturalmente
         await new Promise(resolve => setTimeout(resolve, Math.min(baseDelay + lengthBonus, 6000)));
       }
 
-      const sendResponse = await fetch(`${evolutionUrl}/message/sendText/${instanceName}`, {
+      const sendResponse = await fetchWithTimeout(`${evolutionUrl}/message/sendText/${instanceName}`, {
         method: "POST",
         headers: { "Content-Type": "application/json", apikey: evolutionKey },
         body: JSON.stringify({ number: phone, text: finalParts[i] }),
-      });
+      }, 15000);
 
       if (!sendResponse.ok) {
         console.error("Evolution send error:", sendResponse.status, await sendResponse.text());
