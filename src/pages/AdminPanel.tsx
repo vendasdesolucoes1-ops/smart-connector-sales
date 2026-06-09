@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
+import { useAdminData } from "@/hooks/useAdminData";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -143,21 +144,22 @@ function parseCheckoutDetails(msg: string | null) {
 }
 
 export default function AdminPanel() {
+  const { data: adminData, isLoading: loading, refetch: refetchAdmin } = useAdminData();
+  const siteLeads: SiteLead[] = adminData?.siteLeads ?? [];
+  const siteContent: SiteContent[] = adminData?.siteContent ?? [];
+  const users: AdminUser[] = adminData?.users ?? [];
+  const organizations: Organization[] = adminData?.organizations ?? [];
+
   const [tab, setTab] = useState<Tab>("metrics");
-  const [siteLeads, setSiteLeads] = useState<SiteLead[]>([]);
-  const [siteContent, setSiteContent] = useState<SiteContent[]>([]);
-  const [users, setUsers] = useState<AdminUser[]>([]);
   const [editingKey, setEditingKey] = useState<string | null>(null);
   const [editValue, setEditValue] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [leadFilter, setLeadFilter] = useState<string>("all");
-  const [loading, setLoading] = useState(true);
   const [expandedSale, setExpandedSale] = useState<string | null>(null);
   const [editingNotes, setEditingNotes] = useState<string | null>(null);
   const [notesValue, setNotesValue] = useState("");
   const [creatingUser, setCreatingUser] = useState<string | null>(null);
   const [createdCredentials, setCreatedCredentials] = useState<Record<string, { email: string; password: string }>>({});
-  const [organizations, setOrganizations] = useState<Organization[]>([]);
   const [selectedOrgId, setSelectedOrgId] = useState<string | null>(null);
   const [companyProfile, setCompanyProfile] = useState<CompanyProfileData | null>(null);
   const [savingCompany, setSavingCompany] = useState(false);
@@ -185,7 +187,6 @@ export default function AdminPanel() {
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  useEffect(() => { loadData(); }, []);
 
   // Load activity logs
   const loadLogs = async () => {
@@ -318,23 +319,7 @@ export default function AdminPanel() {
     return () => { supabase.removeChannel(channel); };
   }, [tab]);
 
-  const loadData = async () => {
-    setLoading(true);
-    const session = (await supabase.auth.getSession()).data.session;
-    const [leadsRes, contentRes, usersRes, orgsRes] = await Promise.all([
-      supabase.from("site_leads").select("*").order("created_at", { ascending: false }),
-      supabase.from("site_content").select("*"),
-      supabase.functions.invoke("admin-list-users", {
-        headers: { Authorization: `Bearer ${session?.access_token}` },
-      }),
-      supabase.from("organizations").select("*").order("created_at", { ascending: false }),
-    ]);
-    if (leadsRes.data) setSiteLeads(leadsRes.data as SiteLead[]);
-    if (contentRes.data) setSiteContent(contentRes.data);
-    if (usersRes.data?.users) setUsers(usersRes.data.users);
-    if (orgsRes.data) setOrganizations(orgsRes.data);
-    setLoading(false);
-  };
+  const loadData = () => refetchAdmin();
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -350,7 +335,7 @@ export default function AdminPanel() {
       toast({ title: "Erro ao salvar", description: error.message, variant: "destructive" });
     } else {
       toast({ title: "Salvo!", description: `"${CONTENT_LABELS[key] || key}" atualizado.` });
-      setSiteContent(prev => prev.map(c => c.key === key ? { ...c, value: editValue } : c));
+      refetchAdmin();
       setEditingKey(null);
     }
   };
@@ -360,7 +345,7 @@ export default function AdminPanel() {
     if (error) {
       toast({ title: "Erro", description: error.message, variant: "destructive" });
     } else {
-      setSiteLeads(prev => prev.map(l => l.id === id ? { ...l, admin_notes: notesValue } : l));
+      refetchAdmin();
       setEditingNotes(null);
       toast({ title: "Anotação salva!" });
     }
@@ -372,7 +357,7 @@ export default function AdminPanel() {
     if (error) {
       toast({ title: "Erro", description: error.message, variant: "destructive" });
     } else {
-      setSiteLeads(prev => prev.filter(l => l.id !== id));
+      refetchAdmin();
       toast({ title: "Registro excluído." });
     }
   };
@@ -395,7 +380,6 @@ export default function AdminPanel() {
 
       // Update sale status to approved
       await supabase.from("site_leads").update({ status: "approved" }).eq("id", sale.id);
-      setSiteLeads(prev => prev.map(l => l.id === sale.id ? { ...l, status: "approved" } : l));
 
       setCreatedCredentials(prev => ({
         ...prev,
@@ -416,7 +400,7 @@ export default function AdminPanel() {
     if (error) {
       toast({ title: "Erro", description: error.message, variant: "destructive" });
     } else {
-      setSiteLeads(prev => prev.map(l => l.id === id ? { ...l, status: "rejected" } : l));
+      refetchAdmin();
       toast({ title: "Venda recusada." });
     }
   };

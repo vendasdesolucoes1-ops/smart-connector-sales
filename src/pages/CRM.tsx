@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback, useMemo } from "react";
+import { useCRMData } from "@/hooks/useCRMData";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
@@ -176,9 +177,9 @@ const AUTOMATION_STATUS_MAP: Record<string, { label: string; color: string; icon
 export default function CRM() {
   const { profile } = useAuth();
   const { toast } = useToast();
-  const [stages, setStages] = useState<Stage[]>([]);
-  const [opportunities, setOpportunities] = useState<Opportunity[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: crmData, isLoading: loading, refetch: refetchCRM } = useCRMData(profile?.org_id);
+  const stages = crmData?.stages ?? [];
+  const opportunities = crmData?.opportunities ?? [];
   const [activeView, setActiveView] = useState("all");
   const [aiConfigDialog, setAiConfigDialog] = useState<typeof PIPELINE_STAGES[0] | null>(null);
   const [detailOpp, setDetailOpp] = useState<Opportunity | null>(null);
@@ -305,34 +306,7 @@ export default function CRM() {
     setHandoffSending(false);
   };
 
-  const fetchData = useCallback(async () => {
-    if (!profile?.org_id) return;
-    setLoading(true);
-    const [stagesRes, oppsRes] = await Promise.all([
-      supabase.from("crm_stages").select("id, name, stage_order, stage_key").eq("org_id", profile.org_id).order("stage_order"),
-      supabase.from("opportunities").select("id, stage_id, value, probability, notes, automation_status, personalized_message, message_sent_at, lead_id, lead:leads_raw(name, phone, email, enrichment_data)").eq("org_id", profile.org_id),
-    ]);
-
-    let currentStages = stagesRes.data ?? [];
-    if (currentStages.length === 0) {
-      const stagesToInsert = PIPELINE_STAGES.map((s, i) => ({
-        org_id: profile.org_id!, name: s.name, stage_order: i,
-      }));
-      const { data: newStages } = await supabase.from("crm_stages").insert(stagesToInsert).select("id, name, stage_order, stage_key").order("stage_order");
-      currentStages = newStages ?? [];
-    }
-
-    setStages(currentStages);
-    setOpportunities(
-      (oppsRes.data ?? []).map((o: any) => ({
-        ...o,
-        lead: Array.isArray(o.lead) ? o.lead[0] || null : o.lead,
-      }))
-    );
-    setLoading(false);
-  }, [profile?.org_id]);
-
-  useEffect(() => { fetchData(); fetchHandoffNumber(); }, [fetchData, fetchHandoffNumber]);
+  useEffect(() => { fetchHandoffNumber(); }, [fetchHandoffNumber]);
 
   const stageMap = useMemo(() => {
     const map = new Map<string, typeof PIPELINE_STAGES[0]>();
@@ -361,7 +335,7 @@ export default function CRM() {
     const newStageId = destination.droppableId;
     setOpportunities((prev) => prev.map((o) => (o.id === draggableId ? { ...o, stage_id: newStageId } : o)));
     const { error } = await supabase.from("opportunities").update({ stage_id: newStageId }).eq("id", draggableId);
-    if (error) { toast({ title: "Erro ao mover", description: error.message, variant: "destructive" }); fetchData(); }
+    if (error) { toast({ title: "Erro ao mover", description: error.message, variant: "destructive" }); refetchCRM(); }
   };
 
   const formatCurrency = (value: number) =>
@@ -377,7 +351,7 @@ export default function CRM() {
     if (error) { toast({ title: "Erro", description: error.message, variant: "destructive" }); return; }
     toast({ title: "Atualizado!" });
     setEditingOpp(false);
-    fetchData();
+    refetchCRM();
   };
 
   const deleteOpp = async (oppId: string) => {
@@ -385,7 +359,7 @@ export default function CRM() {
     if (error) { toast({ title: "Erro", description: error.message, variant: "destructive" }); return; }
     toast({ title: "Excluído!" });
     setDetailOpp(null);
-    fetchData();
+    refetchCRM();
   };
 
   const openOppDetail = (opp: Opportunity) => {
