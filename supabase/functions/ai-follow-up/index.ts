@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { isInCooldown, registerContact } from "../_shared/contact-cooldown.ts";
+import { buildSystemPrompt } from "../_shared/build-system-prompt.ts";
 
 const allowedOrigins = [
   "https://vssalesreal.lovable.app",
@@ -162,28 +163,19 @@ serve(async (req) => {
         compCtx = `\n\nCONTEXTO DA EMPRESA:\n${p.join("\n")}`;
       }
 
-      const systemPrompt = `Você é um assistente de vendas via WhatsApp.
-${scenario.system_prompt || "Seja educado, prestativo e profissional."}
-
-SITUAÇÃO: O lead "${conv.push_name || 'cliente'}" não respondeu há ${Math.round(minutesSince)} minutos.
-Este é o ${stepLabel}.
-Objetivo do follow-up: ${contextHint}
-${compCtx}
-
-FORMATO (CRÍTICO):
-- Se precisar mais de 2 linhas, divida em blocos separados por ---BLOCO---
-- Cada bloco = 1-2 linhas no máximo
-- Máximo 2 blocos para follow-up
-- Tom natural, humano, como se estivesse digitando normalmente
-
-REGRAS:
-- Mensagem CURTA (máx 2 linhas por bloco)
-- Tom natural, não robótico
-- NÃO repita mensagens anteriores
-- Varie a abordagem a cada etapa
-- Se for o último follow-up, indique que está à disposição sem pressionar
-- Use 1 emoji no máximo
-- Responda APENAS com a mensagem, sem explicação`;
+      const systemPrompt = buildSystemPrompt({
+        corePrompt: scenario.system_prompt || "Seja educado, prestativo e profissional.",
+        splitMessages: true,
+        maxBlocks: 2,
+        companyContext: compCtx,
+        extraRules: [
+          `SITUAÇÃO: O lead "${conv.push_name || 'cliente'}" não respondeu há ${Math.round(minutesSince)} minutos.`,
+          `Este é o ${stepLabel}.`,
+          `Objetivo do follow-up: ${contextHint}`,
+          `REGRAS ADICIONAIS: Mensagem CURTA (máx 2 linhas por bloco). Tom natural, não robótico. NÃO repita mensagens anteriores. Varie a abordagem a cada etapa. Se for o último follow-up, indique que está à disposição sem pressionar. Use 1 emoji no máximo. Responda APENAS com a mensagem, sem explicação.`,
+        ],
+        includeSchedulingCommands: false,
+      });
 
       try {
         const aiResponse = await fetch("https://api.anthropic.com/v1/messages", {
