@@ -12,7 +12,7 @@ jobs:
       - name: Trigger pipeline automation
         run: |
           curl -X POST \
-            "https://akstlpiqjvgbjjnawqfn.supabase.co/functions/v1/crm-pipeline-automation" \
+            "https://komuatwnrmrmabzvqgjn.supabase.co/functions/v1/crm-pipeline-automation" \
             -H "Content-Type: application/json" \
             -H "Authorization: Bearer ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" \
             -d '{}'
