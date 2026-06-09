@@ -37,7 +37,9 @@ serve(async (req) => {
       .from("conversation_tracker")
       .select("*")
       .eq("follow_up_paused", false)
-      .not("scenario_key", "is", null);
+      .not("scenario_key", "is", null)
+      .gte("last_customer_msg_at", new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString())
+      .limit(200);
 
     if (convErr) {
       console.error("Error fetching conversations:", convErr);
