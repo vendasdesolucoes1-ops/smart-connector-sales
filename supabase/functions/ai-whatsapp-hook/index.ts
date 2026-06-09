@@ -45,6 +45,10 @@ serve(async (req) => {
       return new Response(JSON.stringify({ ignored: true, reason: "no text or group" }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
+    // Sanitize user input for AI context — truncate and wrap with XML delimiters
+    const sanitizeForAI = (text: string) =>
+      `<user_message>${text.slice(0, 500).replace(/<\/user_message>/g, "")}</user_message>`;
+
     const supabaseAdmin = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
 
     // ---- Helper: save message ----
@@ -305,7 +309,7 @@ O lead está respondendo à mensagem enviada pelo disparo. Continue naturalmente
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               model: "models/gemini-embedding-001",
-              content: { parts: [{ text: messageText }] },
+              content: { parts: [{ text: sanitizeForAI(messageText) }] },
               outputDimensionality: 768,
             }),
           }
@@ -417,13 +421,13 @@ O lead está respondendo à mensagem enviada pelo disparo. Continue naturalmente
         if (!hm.from_me && hm.message_text === messageText) continue;
         conversationMessages.push({
           role: hm.from_me ? "assistant" : "user",
-          content: hm.from_me ? hm.message_text : `[MENSAGEM DO USUÁRIO] [${hm.push_name || pushName}]: ${hm.message_text} [/MENSAGEM DO USUÁRIO]`,
+          content: hm.from_me ? hm.message_text : sanitizeForAI(hm.message_text),
         });
       }
     }
 
     // Add current message
-    conversationMessages.push({ role: "user", content: `[MENSAGEM DO USUÁRIO] [${pushName}]: ${messageText} [/MENSAGEM DO USUÁRIO]` });
+    conversationMessages.push({ role: "user", content: sanitizeForAI(messageText) });
 
     // ---- Call AI via Lovable AI Gateway ----
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
