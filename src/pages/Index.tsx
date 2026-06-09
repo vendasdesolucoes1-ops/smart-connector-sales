@@ -29,7 +29,7 @@ const COLORS = [
 ];
 
 export default function Index() {
-  const { profile } = useAuth();
+  const { profile, profileLoading } = useAuth();
   const [stats, setStats] = useState({
     leads: 0, opportunities: 0, converted: 0, appointments: 0,
     activeConversations: 0, broadcasts: 0, discarded: 0, pending: 0, enriched: 0,
@@ -44,7 +44,11 @@ export default function Index() {
   const [pipelineData, setPipelineData] = useState<{ name: string; value: number }[]>([]);
 
   useEffect(() => {
-    if (!profile?.org_id) return;
+    if (profileLoading) return;
+    if (!profile?.org_id) {
+      setLoading(false);
+      return;
+    }
     const orgId = profile.org_id;
 
     const fetchAll = async () => {
@@ -156,7 +160,7 @@ export default function Index() {
       }
     };
     fetchAll();
-  }, [profile?.org_id]);
+  }, [profile?.org_id, profileLoading]);
 
   const conversionRate = stats.leads > 0 ? ((stats.converted / stats.leads) * 100).toFixed(1) : "0";
 
