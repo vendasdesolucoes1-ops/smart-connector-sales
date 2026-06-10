@@ -24,6 +24,7 @@ import CompanyProfile from "./pages/CompanyProfile";
 import CompanyForm from "./pages/CompanyForm";
 import MySeller from "./pages/MySeller";
 import CommCRM from "./pages/CommCRM";
+import Onboarding from "./pages/Onboarding";
 
 const queryClient = new QueryClient();
 
@@ -67,6 +68,7 @@ function AppRoutes() {
         <Route path="/settings" element={<SettingsPage />} />
         <Route path="/appointments" element={<Appointments />} />
       </Route>
+      <Route path="/onboarding" element={<Onboarding />} />
       <Route path="/site" element={<Landing />} />
       <Route path="/checkout" element={<Checkout />} />
       <Route path="/admin" element={<AdminAuth />} />

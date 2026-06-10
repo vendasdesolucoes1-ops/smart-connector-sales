@@ -52,7 +52,7 @@ const EMPTY_FORM = {
 };
 
 export default function Appointments() {
-  const { profile } = useAuth();
+  const { profile, profileLoading } = useAuth();
   const { toast } = useToast();
   const orgId = profile?.org_id;
 
@@ -67,7 +67,11 @@ export default function Appointments() {
   const [view, setView] = useState<"calendar" | "list">("calendar");
 
   useEffect(() => {
-    if (!orgId) return;
+    if (profileLoading) return;
+    if (!orgId) {
+      setLoading(false);
+      return;
+    }
     loadAppointments();
 
     const channel = supabase
@@ -76,7 +80,7 @@ export default function Appointments() {
       .subscribe();
 
     return () => { supabase.removeChannel(channel); };
-  }, [orgId]);
+  }, [orgId, profileLoading]);
 
   const loadAppointments = async () => {
     if (!orgId) return;

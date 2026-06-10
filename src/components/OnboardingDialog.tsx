@@ -5,25 +5,22 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Building2, AlertCircle } from "lucide-react";
+import { Building2, ArrowRight } from "lucide-react";
 
+/**
+ * Mandatory full-screen onboarding modal.
+ * Renders automatically when the logged-in user has no organization
+ * (profile loaded and org_id is null). Cannot be dismissed — the only
+ * way forward is creating an organization.
+ */
 export function OnboardingDialog() {
-  const { user, profile } = useAuth();
+  const { user, profile, profileLoading } = useAuth();
   const [orgName, setOrgName] = useState("");
   const [loading, setLoading] = useState(false);
-  const [open, setOpen] = useState(false);
   const { toast } = useToast();
 
-  // Only show if user has no org
-  if (profile?.org_id) return null;
+  // Only show when we know for sure the user has no org
+  if (profileLoading || !user || profile?.org_id) return null;
 
   const handleCreateOrg = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -59,61 +56,61 @@ export function OnboardingDialog() {
       await supabase.from("crm_stages").insert(stages);
 
       toast({ title: "Organização criada!", description: `${orgName} está pronta.` });
-      setOpen(false);
+      // Refresh session + reload so all pages pick up the new org_id
+      await supabase.auth.refreshSession();
       window.location.reload();
     } catch (error: any) {
       toast({ title: "Erro", description: error.message, variant: "destructive" });
-    } finally {
       setLoading(false);
     }
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="h-7 gap-1.5 rounded-lg text-xs font-medium text-amber-500 hover:text-amber-400 hover:bg-amber-500/10 animate-pulse"
-        >
-          <AlertCircle className="h-3.5 w-3.5" />
-          <span className="group-data-[collapsible=icon]:hidden">Configurar</span>
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-md glass rounded-2xl border-border/50">
-        <DialogHeader className="text-center space-y-3">
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl gradient-primary glow-primary">
-            <Building2 className="h-7 w-7 text-primary-foreground" />
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-background/95 backdrop-blur-sm p-4">
+      <div className="w-full max-w-md animate-fade-in">
+        <div className="glass rounded-2xl p-8 space-y-6 border border-border/50">
+          <div className="text-center space-y-3">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl gradient-primary glow-primary">
+              <Building2 className="h-8 w-8 text-primary-foreground" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold tracking-tight">Crie sua organização</h1>
+              <p className="text-sm text-muted-foreground mt-1">
+                Para usar o VS Sales, configure o nome da sua empresa. Esse passo é obrigatório.
+              </p>
+            </div>
           </div>
-          <DialogTitle className="text-xl font-bold">Crie sua organização</DialogTitle>
-          <DialogDescription className="text-sm text-muted-foreground">
-            Configure o nome da sua empresa para acessar todas as funcionalidades.
-          </DialogDescription>
-        </DialogHeader>
 
-        <form onSubmit={handleCreateOrg} className="space-y-5 mt-2">
-          <div className="space-y-2">
-            <Label htmlFor="orgNameDialog" className="text-xs font-medium">
-              Nome da organização
-            </Label>
-            <Input
-              id="orgNameDialog"
-              placeholder="Minha Empresa Ltda"
-              value={orgName}
-              onChange={(e) => setOrgName(e.target.value)}
-              className="h-11 rounded-xl bg-secondary/50 border-border/50 focus:border-primary/50"
-              required
-            />
-          </div>
-          <Button
-            type="submit"
-            className="w-full h-11 rounded-xl gradient-primary hover:opacity-90 transition-opacity font-semibold"
-            disabled={loading}
-          >
-            {loading ? "Criando..." : "Criar e continuar"}
-          </Button>
-        </form>
-      </DialogContent>
-    </Dialog>
+          <form onSubmit={handleCreateOrg} className="space-y-5">
+            <div className="space-y-2">
+              <Label htmlFor="orgNameOnboarding" className="text-xs font-medium">
+                Nome da organização
+              </Label>
+              <Input
+                id="orgNameOnboarding"
+                placeholder="Minha Empresa Ltda"
+                value={orgName}
+                onChange={(e) => setOrgName(e.target.value)}
+                className="h-11 rounded-xl bg-secondary/50 border-border/50 focus:border-primary/50"
+                autoFocus
+                required
+              />
+            </div>
+            <Button
+              type="submit"
+              className="w-full h-11 rounded-xl gradient-primary hover:opacity-90 transition-opacity font-semibold"
+              disabled={loading}
+            >
+              {loading ? "Criando..." : (
+                <span className="flex items-center gap-2">
+                  Criar e começar
+                  <ArrowRight className="h-4 w-4" />
+                </span>
+              )}
+            </Button>
+          </form>
+        </div>
+      </div>
+    </div>
   );
 }

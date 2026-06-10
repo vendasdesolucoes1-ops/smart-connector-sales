@@ -70,7 +70,7 @@ const sourceIcons: Record<string, typeof Globe> = {
 };
 
 export default function Leads() {
-  const { profile } = useAuth();
+  const { profile, profileLoading } = useAuth();
   const { toast } = useToast();
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
@@ -129,7 +129,11 @@ export default function Leads() {
   };
 
   const fetchLeads = async () => {
-    if (!profile?.org_id) return;
+    if (profileLoading) return;
+    if (!profile?.org_id) {
+      setLoading(false);
+      return;
+    }
     setLoading(true);
 
     let query = supabase
@@ -158,7 +162,7 @@ export default function Leads() {
     setLoading(false);
   };
 
-  useEffect(() => { fetchLeads(); }, [profile?.org_id, currentPage, debouncedSearch, statusFilter, sourceFilter, quickFilter]);
+  useEffect(() => { fetchLeads(); }, [profile?.org_id, profileLoading, currentPage, debouncedSearch, statusFilter, sourceFilter, quickFilter]);
   useEffect(() => { fetchStatusCounts(); }, [profile?.org_id]);
 
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));

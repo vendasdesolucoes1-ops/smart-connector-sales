@@ -2,7 +2,6 @@ import { useState } from "react";
 import { LogOut, Menu, X, ChevronDown, PanelLeft } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import { OnboardingDialog } from "@/components/OnboardingDialog";
 import { useAuth } from "@/contexts/AuthContext";
 import { Logo } from "@/components/Logo";
 import {
@@ -59,13 +58,6 @@ export function AppNavbar() {
               <div className="px-2.5 py-1.5">
                 <p className="text-[12px] font-medium">{profile?.full_name || "Usuário"}</p>
               </div>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem asChild>
-                <div className="flex items-center justify-between px-2">
-                  <span className="text-[12px]">Onboarding</span>
-                  <OnboardingDialog />
-                </div>
-              </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={signOut} className="text-destructive focus:text-destructive cursor-pointer text-[12px]">
                 <LogOut className="h-3.5 w-3.5 mr-1.5" />
