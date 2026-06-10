@@ -28,38 +28,17 @@ export function OnboardingDialog() {
     setLoading(true);
 
     try {
-      const { data: org, error: orgError } = await supabase
-        .from("organizations")
-        .insert({ name: orgName, owner_id: user.id })
-        .select()
-        .single();
-      if (orgError) throw orgError;
-
-      const { error: profileError } = await supabase
-        .from("profiles")
-        .update({ org_id: org.id })
-        .eq("user_id", user.id);
-      if (profileError) throw profileError;
-
-      const { error: roleError } = await supabase
-        .from("user_roles")
-        .insert({ user_id: user.id, org_id: org.id, role: "admin" });
-      if (roleError) throw roleError;
-
-      const stages = [
-        { name: "Qualificação", stage_order: 0, org_id: org.id },
-        { name: "Prospecção", stage_order: 1, org_id: org.id },
-        { name: "Proposta", stage_order: 2, org_id: org.id },
-        { name: "Negociação", stage_order: 3, org_id: org.id },
-        { name: "Fechamento", stage_order: 4, org_id: org.id },
-      ];
-      await supabase.from("crm_stages").insert(stages);
+      const { error } = await supabase.rpc("create_organization_for_user" as any, {
+        org_name: orgName,
+      });
+      if (error) throw error;
 
       toast({ title: "Organização criada!", description: `${orgName} está pronta.` });
       // Refresh session + reload so all pages pick up the new org_id
       await supabase.auth.refreshSession();
       window.location.reload();
     } catch (error: any) {
+      console.error("Erro ao criar organização:", error);
       toast({ title: "Erro", description: error.message, variant: "destructive" });
       setLoading(false);
     }
