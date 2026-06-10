@@ -492,6 +492,7 @@ export type Database = {
       chat_messages: {
         Row: {
           created_at: string
+          embedding: string | null
           from_me: boolean
           id: string
           instance_name: string
@@ -505,6 +506,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          embedding?: string | null
           from_me?: boolean
           id?: string
           instance_name: string
@@ -518,6 +520,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          embedding?: string | null
           from_me?: boolean
           id?: string
           instance_name?: string
