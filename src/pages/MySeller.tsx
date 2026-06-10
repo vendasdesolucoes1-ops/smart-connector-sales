@@ -163,7 +163,7 @@ const SIM_SCENARIOS = [
 
 // ====== COMPONENT ======
 export default function MySeller() {
-  const { profile, user } = useAuth();
+  const { profile, user, profileLoading } = useAuth();
   const { toast } = useToast();
   const ownOrgId = profile?.org_id;
 
@@ -434,7 +434,11 @@ ${!useEmoji ? "- ZERO EMOJIS. Remova qualquer emoji antes de enviar." : ""}
 
   // ---- Fetch data for selected org ----
   useEffect(() => {
-    if (!orgId) return;
+    if (profileLoading) return;
+    if (!orgId) {
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     (async () => {
       const [companyRes, scenariosRes, docsRes, leadsRes, oppsRes] = await Promise.all([
@@ -462,7 +466,7 @@ ${!useEmoji ? "- ZERO EMOJIS. Remova qualquer emoji antes de enviar." : ""}
       setPipelineValue(opportunities.reduce((s: number, o: any) => s + (Number(o.value) || 0), 0));
       setLoading(false);
     })();
-  }, [orgId]);
+  }, [orgId, profileLoading]);
 
   useEffect(() => { chatEndRef.current?.scrollIntoView({ behavior: "smooth" }); }, [chatMessages]);
 

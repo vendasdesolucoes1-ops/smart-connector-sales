@@ -4,6 +4,7 @@ import { ModuleNavbar } from "@/components/ModuleNavbar";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { findCurrentModule } from "@/lib/navigation";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { OnboardingDialog } from "@/components/OnboardingDialog";
 
 export function AppLayout() {
   const { pathname } = useLocation();
@@ -11,6 +12,7 @@ export function AppLayout() {
 
   return (
     <SidebarProvider defaultOpen={false}>
+      <OnboardingDialog />
       <div className="flex min-h-screen w-full bg-background">
         <AppSidebar />
 
