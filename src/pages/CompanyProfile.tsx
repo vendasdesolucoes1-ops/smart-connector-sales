@@ -211,7 +211,7 @@ function BusinessModelSection({ prefix, label, icon: Icon, iconColor, data, upda
 }
 
 export default function CompanyProfile() {
-  const { profile: userProfile } = useAuth();
+  const { profile: userProfile, profileLoading } = useAuth();
   const [data, setData] = useState<CompanyProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -243,7 +243,13 @@ export default function CompanyProfile() {
   };
 
   useEffect(() => {
-    if (!orgId) return;
+    // Wait for the user profile (and org_id) to finish loading before deciding what to do
+    if (profileLoading) return;
+    if (!orgId) {
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
     (async () => {
       const { data: cp } = await supabase
         .from("company_profiles")
@@ -266,7 +272,7 @@ export default function CompanyProfile() {
       }
       setLoading(false);
     })();
-  }, [orgId]);
+  }, [orgId, profileLoading]);
 
   const update = (field: keyof CompanyProfile, value: any) => {
     setData((prev) => prev ? { ...prev, [field]: value } : prev);
@@ -328,7 +334,15 @@ export default function CompanyProfile() {
   const removeFaq = (idx: number) => { if (!data) return; update("objections_faq", data.objections_faq.filter((_, i) => i !== idx)); };
 
   if (loading) return <div className="flex min-h-[60vh] items-center justify-center"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>;
-  if (!data) return null;
+  if (!data) {
+    return (
+      <div className="flex min-h-[60vh] flex-col items-center justify-center text-center text-muted-foreground gap-2">
+        <Building2 className="h-10 w-10 opacity-30" />
+        <p className="text-sm">Não foi possível carregar o perfil da empresa.</p>
+        <p className="text-xs">Verifique sua conexão ou tente recarregar a página.</p>
+      </div>
+    );
+  }
 
   const completeness = getCompleteness();
   const hasB2B = data.business_models.includes("b2b");
