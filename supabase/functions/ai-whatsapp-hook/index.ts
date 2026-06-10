@@ -45,18 +45,24 @@ serve(async (req) => {
       return new Response(JSON.stringify({ ignored: true, reason: "no text or group" }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
+    // Sanitize user input for AI context — truncate and wrap with XML delimiters
+    const sanitizeForAI = (text: string) =>
+      `<user_message>${text.slice(0, 500).replace(/<\/user_message>/g, "")}</user_message>`;
+
     const supabaseAdmin = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
 
     // ---- Helper: save message ----
-    const saveMessage = async (orgId: string, instName: string, jid: string, fromMe: boolean, text: string, pName?: string, msgId?: string): Promise<{ inserted: boolean; msgId: string | null }> => {
+    const saveMessage = async (orgId: string, instName: string, jid: string, fromMe: boolean, text: string, pName?: string, msgId?: string, embedding?: number[] | null): Promise<{ inserted: boolean; msgId: string | null }> => {
       try {
         const finalMsgId = msgId || `msg_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
-        const { data } = await supabaseAdmin.from("chat_messages").upsert({
+        const row: Record<string, any> = {
           org_id: orgId, instance_name: instName, remote_jid: jid, from_me: fromMe,
           message_text: text, push_name: pName || null,
           message_id: finalMsgId,
           timestamp: new Date().toISOString(),
-        }, { onConflict: "message_id", ignoreDuplicates: true }).select("id");
+        };
+        if (embedding) row.embedding = JSON.stringify(embedding);
+        const { data } = await supabaseAdmin.from("chat_messages").upsert(row, { onConflict: "message_id", ignoreDuplicates: true }).select("id");
         const inserted = (data?.length ?? 0) > 0;
         return { inserted, msgId: finalMsgId };
       } catch (e) { console.error("saveMessage error:", e); return { inserted: false, msgId: null }; }
@@ -80,30 +86,30 @@ serve(async (req) => {
       return new Response(JSON.stringify({ status: "already_processed" }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
-    // ---- Check if any scenario is enabled for this org ----
-    const { data: scenarios } = await supabaseAdmin
-      .from("ai_scenarios")
-      .select("*")
-      .eq("org_id", orgId)
-      .eq("enabled", true);
+    // ---- Parallel fetch: scenarios, leads, conversation tracker ----
+    const phone = remoteJid.replace("@s.whatsapp.net", "");
+
+    const [
+      { data: scenarios },
+      { data: matchedLeads },
+      { data: existingConv },
+    ] = await Promise.all([
+      supabaseAdmin.from("ai_scenarios").select("*").eq("org_id", orgId).eq("enabled", true),
+      supabaseAdmin.from("leads_raw").select("id, name").eq("org_id", orgId)
+        .or(`phone.ilike.%${phone}%,phone.ilike.%${phone.slice(-8)}%`).limit(5),
+      supabaseAdmin.from("conversation_tracker")
+        .select("id, customer_msg_count, scenario_key, detected_audience")
+        .eq("org_id", orgId).eq("instance_name", instanceName).eq("remote_jid", remoteJid)
+        .maybeSingle(),
+    ]);
 
     if (!scenarios || scenarios.length === 0) {
       return new Response(JSON.stringify({ ignored: true, reason: "no active scenarios" }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
     // ---- Determine scenario ----
-    const phone = remoteJid.replace("@s.whatsapp.net", "");
     let scenarioKey = "organic_inbound"; // default
     let detectedAudience = ""; // b2b or b2c from broadcast
-
-    // Check if lead came from a broadcast
-    // Use .limit(1) instead of .maybeSingle() to handle duplicate phone numbers
-    const { data: matchedLeads } = await supabaseAdmin
-      .from("leads_raw")
-      .select("id, name")
-      .eq("org_id", orgId)
-      .or(`phone.ilike.%${phone}%,phone.ilike.%${phone.slice(-8)}%`)
-      .limit(5);
 
     const matchedLead = matchedLeads?.[0] || null;
 
@@ -162,15 +168,7 @@ O lead está respondendo à mensagem enviada pelo disparo. Continue naturalmente
     const outOfHoursMessage = behavior.out_of_hours_message || "";
     const handoffKeywords: string[] = behavior.handoff_keywords || [];
 
-    // ---- Track conversation ----
-    const { data: existingConv } = await supabaseAdmin
-      .from("conversation_tracker")
-      .select("id, customer_msg_count, scenario_key, detected_audience")
-      .eq("org_id", orgId)
-      .eq("instance_name", instanceName)
-      .eq("remote_jid", remoteJid)
-      .maybeSingle();
-
+    // ---- Track conversation (existingConv already fetched in parallel above) ----
     let customerMsgCount = 0;
 
     if (existingConv) {
@@ -313,7 +311,7 @@ O lead está respondendo à mensagem enviada pelo disparo. Continue naturalmente
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               model: "models/gemini-embedding-001",
-              content: { parts: [{ text: messageText }] },
+              content: { parts: [{ text: sanitizeForAI(messageText) }] },
               outputDimensionality: 768,
             }),
           }
@@ -397,6 +395,7 @@ O lead está respondendo à mensagem enviada pelo disparo. Continue naturalmente
       maxMessages, actualBotCount, activeEngagement, hidePrices,
       companyContext, knowledgeContext, broadcastContext,
       repeatedPhrases, includeSchedulingCommands: true,
+      prefix_override: behavior.prefix_override,
     });
 
     // ---- Build conversation messages ----
@@ -425,13 +424,13 @@ O lead está respondendo à mensagem enviada pelo disparo. Continue naturalmente
         if (!hm.from_me && hm.message_text === messageText) continue;
         conversationMessages.push({
           role: hm.from_me ? "assistant" : "user",
-          content: hm.from_me ? hm.message_text : `[MENSAGEM DO USUÁRIO] [${hm.push_name || pushName}]: ${hm.message_text} [/MENSAGEM DO USUÁRIO]`,
+          content: hm.from_me ? hm.message_text : sanitizeForAI(hm.message_text),
         });
       }
     }
 
     // Add current message
-    conversationMessages.push({ role: "user", content: `[MENSAGEM DO USUÁRIO] [${pushName}]: ${messageText} [/MENSAGEM DO USUÁRIO]` });
+    conversationMessages.push({ role: "user", content: sanitizeForAI(messageText) });
 
     // ---- Call AI via Lovable AI Gateway ----
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
@@ -523,6 +522,86 @@ O lead está respondendo à mensagem enviada pelo disparo. Continue naturalmente
     if (!reply) {
       return new Response(JSON.stringify({ error: "Empty AI response" }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
+
+    // ---- Semantic anti-repetition check ----
+    let replyEmbedding: number[] | null = null;
+    try {
+      const GEMINI_KEY = Deno.env.get("GOOGLE_API_KEY");
+      if (GEMINI_KEY) {
+        const embRes = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-embedding-001:embedContent?key=${GEMINI_KEY}`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              model: "models/gemini-embedding-001",
+              content: { parts: [{ text: reply.substring(0, 500) }] },
+              outputDimensionality: 768,
+            }),
+          }
+        );
+        if (embRes.ok) {
+          const embData = await embRes.json();
+          replyEmbedding = embData?.embedding?.values ?? null;
+        }
+
+        if (replyEmbedding) {
+          const { data: recentEmbs } = await supabaseAdmin
+            .from("chat_messages")
+            .select("embedding")
+            .eq("org_id", orgId)
+            .eq("remote_jid", remoteJid)
+            .eq("from_me", true)
+            .not("embedding", "is", null)
+            .order("created_at", { ascending: false })
+            .limit(5);
+
+          if (recentEmbs?.length) {
+            // For unit-normalised Gemini embeddings, cosine similarity = dot product
+            const dotProduct = (a: number[], b: number[]) =>
+              a.reduce((s: number, v: number, i: number) => s + v * b[i], 0);
+
+            let maxSim = 0;
+            for (const row of recentEmbs) {
+              const stored = row.embedding;
+              if (Array.isArray(stored) && stored.length === 768) {
+                const sim = dotProduct(replyEmbedding, stored);
+                if (sim > maxSim) maxSim = sim;
+              }
+            }
+
+            if (maxSim > 0.85) {
+              console.log(`Semantic similarity ${maxSim.toFixed(3)} > 0.85 — regenerating with reformulation instruction`);
+              const retryMsgs = [
+                ...conversationMessages,
+                { role: "assistant", content: reply },
+                { role: "user", content: "[INSTRUÇÃO INTERNA — NÃO MOSTRAR AO LEAD] Sua resposta anterior foi semanticamente muito similar a mensagens que você já enviou. Reformule COMPLETAMENTE usando vocabulário, estrutura e exemplos diferentes. Traga um ângulo ou informação nova que ainda não foi mencionada." },
+              ];
+              try {
+                const retryResp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+                  method: "POST",
+                  headers: { Authorization: `Bearer ${LOVABLE_API_KEY}`, "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    model: "google/gemini-2.5-flash",
+                    messages: retryMsgs,
+                    max_tokens: 1024,
+                    temperature: Math.min(temperature + 0.15, 0.6),
+                  }),
+                });
+                if (retryResp.ok) {
+                  const retryData = await retryResp.json();
+                  const retryReply = retryData.choices?.[0]?.message?.content || "";
+                  if (retryReply) {
+                    reply = retryReply;
+                    replyEmbedding = null; // embedding will be stale; skip saving it for the retry
+                  }
+                }
+              } catch (retryErr) { console.warn("Semantic retry failed (non-critical):", retryErr); }
+            }
+          }
+        }
+      }
+    } catch (semErr) { console.warn("Semantic similarity check failed (non-critical):", semErr); }
 
     // Anti-hallucination is now handled entirely by the system prompt (user-configured)
 
@@ -681,7 +760,7 @@ O lead está respondendo à mensagem enviada pelo disparo. Continue naturalmente
         console.error("Evolution send error:", sendResponse.status, await sendResponse.text());
       } else {
         sendSuccess = true;
-        await saveMessage(orgId!, instanceName, remoteJid, true, finalParts[i], undefined, `bot_${Date.now()}_${i}`);
+        await saveMessage(orgId!, instanceName, remoteJid, true, finalParts[i], undefined, `bot_${Date.now()}_${i}`, i === 0 ? replyEmbedding : null);
       }
     }
 

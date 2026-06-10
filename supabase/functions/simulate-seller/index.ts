@@ -1,13 +1,10 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
-};
+import { buildSystemPrompt } from "../_shared/build-system-prompt.ts";
+import { getCorsHeaders } from "../_shared/cors.ts";
 
 serve(async (req) => {
+  const corsHeaders = getCorsHeaders(req);
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
@@ -31,7 +28,7 @@ serve(async (req) => {
     if (!profile?.org_id) throw new Error("No org");
 
     const orgId = profile.org_id;
-    const { messages, ai_config_id } = await req.json();
+    const { messages, ai_config_id, ai_scenario_id } = await req.json();
 
     // Fetch all context in parallel
     const queries: any[] = [
@@ -61,7 +58,67 @@ serve(async (req) => {
     const opps = oppsRes.data || [];
     const pipelineValue = opps.reduce((sum: number, o: any) => sum + (Number(o.value) || 0), 0);
 
-    // Build system prompt - use modular config if available
+    // ---- Production scenario path (ai_scenario_id) ----
+    if (ai_scenario_id) {
+      const { data: scenario } = await supabase
+        .from("ai_scenarios")
+        .select("*")
+        .eq("id", ai_scenario_id)
+        .eq("org_id", orgId)
+        .maybeSingle();
+      if (!scenario) throw new Error("Scenario not found or access denied");
+
+      const behavior = (scenario.behavior as any) || {};
+      const cp = company as any;
+      let companyContext = "";
+      if (cp) {
+        const parts: string[] = [];
+        if (cp.company_name) parts.push(`Empresa: ${cp.company_name}`);
+        if (cp.segment) parts.push(`Segmento: ${cp.segment}`);
+        if (cp.description) parts.push(`Descrição: ${cp.description}`);
+        if (cp.tone_of_voice) parts.push(`Tom: ${cp.tone_of_voice}`);
+        const products = cp.products_services || [];
+        if (products.length > 0) parts.push(`Produtos: ${products.map((p: any) => p.name).join(", ")}`);
+        companyContext = `\n\nCONTEXTO DA EMPRESA:\n${parts.join("\n")}`;
+      }
+
+      const systemPrompt = buildSystemPrompt({
+        corePrompt: scenario.system_prompt || "Seja educado, prestativo e profissional.",
+        useEmoji: behavior.use_emoji !== false,
+        splitMessages: behavior.split_messages !== false,
+        maxBlocks: behavior.max_blocks ?? 2,
+        maxCharsPerBlock: behavior.max_chars_per_block ?? 400,
+        activeEngagement: behavior.active_engagement !== false,
+        hidePrices: behavior.hide_prices === true,
+        companyContext,
+        includeSchedulingCommands: true,
+        prefix_override: behavior.prefix_override,
+      });
+
+      const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+      if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
+      const temperature = behavior.temperature ? Number(behavior.temperature) : 0.7;
+
+      const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${LOVABLE_API_KEY}`, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: "google/gemini-2.5-flash",
+          messages: [{ role: "system", content: systemPrompt }, ...messages],
+          stream: true,
+          temperature,
+        }),
+      });
+      if (!response.ok) {
+        const errText = await response.text();
+        throw new Error(`AI API error ${response.status}: ${errText}`);
+      }
+      return new Response(response.body, {
+        headers: { ...corsHeaders, "Content-Type": "text/event-stream", "Cache-Control": "no-cache" },
+      });
+    }
+
+    // Build system prompt - use modular config if available (legacy ai_configs path)
     const modularCfg = (aiConfig?.config as any)?.modular;
     let systemPrompt = "";
 
