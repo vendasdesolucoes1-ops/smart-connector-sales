@@ -22,50 +22,13 @@ type IntegrationConfig = {
 
 const integrationConfigs: IntegrationConfig[] = [
   {
-    service: "firecrawl",
-    label: "Firecrawl",
-    description: "Web scraping e extração de dados",
-    emoji: "🔥",
-    fields: [
-      { key: "api_key", label: "API Key", placeholder: "fc-...", type: "api_key" },
-    ],
-  },
-  {
-    service: "hasdata",
-    label: "Hasdata",
-    description: "Scraping de Google Maps",
-    emoji: "📍",
-    fields: [
-      { key: "api_key", label: "API Key", placeholder: "Sua chave Hasdata", type: "api_key" },
-    ],
-  },
-  {
     service: "evolution",
-    label: "Evolution API",
-    description: "WhatsApp para extração",
+    label: "Conectar WhatsApp",
+    description: "Conecte o WhatsApp da sua empresa",
     emoji: "💬",
     fields: [
-      { key: "api_key", label: "API Key", placeholder: "Sua chave da instância", type: "api_key" },
-      { key: "endpoint_url", label: "URL da Instância", placeholder: "https://sua-instancia.evolution-api.com", type: "endpoint_url" },
-    ],
-  },
-  {
-    service: "perplexity",
-    label: "Perplexity AI",
-    description: "Enriquecimento com IA",
-    emoji: "🧠",
-    fields: [
-      { key: "api_key", label: "API Key", placeholder: "pplx-...", type: "api_key" },
-    ],
-  },
-  {
-    service: "supabase_external",
-    label: "Banco Externo",
-    description: "Conecte o DB do cliente",
-    emoji: "🗄️",
-    fields: [
-      { key: "endpoint_url", label: "URL", placeholder: "https://xxx.supabase.co", type: "endpoint_url" },
-      { key: "api_key", label: "Anon Key", placeholder: "eyJ...", type: "api_key" },
+      { key: "endpoint_url", label: "URL do seu servidor WhatsApp", placeholder: "https://sua-instancia.exemplo.com", type: "endpoint_url" },
+      { key: "api_key", label: "Chave de acesso", placeholder: "Cole aqui a chave da sua instância", type: "api_key" },
     ],
   },
 ];
@@ -188,11 +151,11 @@ export default function SettingsPage() {
         </div>
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Configurações</h1>
-          <p className="text-muted-foreground text-sm">Integrações e chaves de API</p>
+          <p className="text-muted-foreground text-sm">Conecte o WhatsApp da sua empresa</p>
         </div>
       </div>
 
-      <Tabs defaultValue="firecrawl">
+      <Tabs defaultValue="evolution">
         <TabsList className="bg-secondary/30 rounded-xl p-1 h-auto flex-wrap">
           {integrationConfigs.map((cfg) => (
             <TabsTrigger key={cfg.service} value={cfg.service} className="rounded-lg text-xs data-[state=active]:bg-primary/10 data-[state=active]:text-primary py-2 px-3">

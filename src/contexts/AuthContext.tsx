@@ -16,6 +16,7 @@ type AuthContextType = {
   profile: Profile | null;
   loading: boolean;
   profileLoading: boolean;
+  hasValidInvitation: boolean | null;
   signOut: () => Promise<void>;
 };
 
@@ -25,6 +26,7 @@ const AuthContext = createContext<AuthContextType>({
   profile: null,
   loading: true,
   profileLoading: false,
+  hasValidInvitation: null,
   signOut: async () => {},
 });
 
@@ -39,6 +41,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
   const [profileLoading, setProfileLoading] = useState(false);
+  const [hasValidInvitation, setHasValidInvitation] = useState<boolean | null>(null);
+
+  const checkInvitation = async (userId: string) => {
+    try {
+      const { data, error } = await supabase.rpc("has_valid_invitation" as any, { p_user_id: userId });
+      if (error) {
+        console.error("Erro ao verificar convite:", error.message);
+        setHasValidInvitation(false);
+        return;
+      }
+      setHasValidInvitation(Boolean(data));
+    } catch (error) {
+      console.error("Falha inesperada ao verificar convite:", error);
+      setHasValidInvitation(false);
+    }
+  };
 
   const fetchProfile = async (userId: string) => {
     setProfileLoading(true);
@@ -75,6 +93,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (initialSession?.user) {
         // Fire and forget — don't block loading on profile
         fetchProfile(initialSession.user.id);
+        checkInvitation(initialSession.user.id);
       }
 
       setLoading(false);
@@ -97,8 +116,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         if (nextSession?.user) {
           fetchProfile(nextSession.user.id);
+          checkInvitation(nextSession.user.id);
         } else {
           setProfile(null);
+          setHasValidInvitation(null);
         }
 
         // Ensure loading is cleared on any auth event
@@ -125,10 +146,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
     setSession(null);
     setProfile(null);
+    setHasValidInvitation(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, profile, loading, profileLoading, signOut }}>
+    <AuthContext.Provider value={{ user, session, profile, loading, profileLoading, hasValidInvitation, signOut }}>
       {children}
     </AuthContext.Provider>
   );
