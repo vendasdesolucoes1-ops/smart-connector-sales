@@ -26,7 +26,11 @@ import MySeller from "./pages/MySeller";
 import CommCRM from "./pages/CommCRM";
 import Onboarding from "./pages/Onboarding";
 import InviteAccept from "./pages/InviteAccept";
-import AdminInvites from "./pages/AdminInvites";
+import SuperAdminOverview from "./pages/super-admin/SuperAdminOverview";
+import SuperAdminInvites from "./pages/super-admin/SuperAdminInvites";
+import SuperAdminSettings from "./pages/super-admin/SuperAdminSettings";
+import { SuperAdminGate } from "@/components/super-admin/SuperAdminGate";
+import { SuperAdminLayout } from "@/components/super-admin/SuperAdminLayout";
 import { InvitationGate } from "@/components/InvitationGate";
 
 const queryClient = new QueryClient();
@@ -74,7 +78,18 @@ function AppRoutes() {
           <Route path="/appointments" element={<Appointments />} />
         </Route>
         <Route path="/onboarding" element={<Onboarding />} />
-        <Route path="/admin/invites" element={<AdminInvites />} />
+        <Route
+          path="/super-admin"
+          element={
+            <SuperAdminGate>
+              <SuperAdminLayout />
+            </SuperAdminGate>
+          }
+        >
+          <Route index element={<SuperAdminOverview />} />
+          <Route path="invites" element={<SuperAdminInvites />} />
+          <Route path="settings" element={<SuperAdminSettings />} />
+        </Route>
         <Route path="/site" element={<Landing />} />
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/admin" element={<AdminAuth />} />
