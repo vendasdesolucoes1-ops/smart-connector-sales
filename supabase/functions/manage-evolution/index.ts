@@ -20,10 +20,38 @@ Deno.serve(async (req) => {
     // Global Evolution API credentials from secrets
     const baseUrl = (Deno.env.get("EVOLUTION_API_URL") || "").replace(/\/$/, "");
     const apiKey = Deno.env.get("EVOLUTION_API_KEY") || "";
+    const WEBHOOK_SECRET = Deno.env.get("EVOLUTION_WEBHOOK_SECRET") || "";
 
     if (!baseUrl || !apiKey) {
       return json({ error: "Evolution API não configurada no sistema." }, 500);
     }
+    if (!WEBHOOK_SECRET) {
+      return json({ error: "EVOLUTION_WEBHOOK_SECRET não configurado no sistema." }, 500);
+    }
+
+    // ai-whatsapp-hook validates this secret as a query param (Evolution's
+    // webhook config has no reliable way to attach custom headers).
+    const buildWebhookUrl = () => `${SUPABASE_URL}/functions/v1/ai-whatsapp-hook?secret=${encodeURIComponent(WEBHOOK_SECRET)}`;
+
+    const setEvolutionWebhook = async (instName: string) => {
+      const response = await fetch(`${baseUrl}/webhook/set/${instName}`, {
+        method: "POST",
+        headers: { apikey: apiKey, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          webhook: {
+            url: buildWebhookUrl(),
+            enabled: true,
+            webhook_by_events: false,
+            webhook_base64: false,
+            events: ["MESSAGES_UPSERT"],
+          },
+        }),
+      });
+      if (!response.ok) {
+        const errText = await response.text();
+        throw new Error(`${response.status} - ${errText}`);
+      }
+    };
 
     // Auth
     const authHeader = req.headers.get("authorization");
@@ -130,27 +158,16 @@ Deno.serve(async (req) => {
         .upsert({ instance_name, org_id, integration_id: integration!.id }, { onConflict: "instance_name" });
 
       // Auto-configure webhook for AI responses
-      const webhookUrl = `${SUPABASE_URL}/functions/v1/ai-whatsapp-hook`;
+      let webhookWarning: string | null = null;
       try {
-        await fetch(`${baseUrl}/webhook/set/${instance_name}`, {
-          method: "POST",
-          headers: { apikey: apiKey, "Content-Type": "application/json" },
-          body: JSON.stringify({
-            webhook: {
-              url: webhookUrl,
-              enabled: true,
-              webhook_by_events: false,
-              webhook_base64: false,
-              events: ["MESSAGES_UPSERT"],
-            },
-          }),
-        });
+        await setEvolutionWebhook(instance_name);
         console.log(`Webhook configured for instance: ${instance_name}`);
       } catch (e) {
         console.error(`Failed to set webhook for ${instance_name}:`, e);
+        webhookWarning = "Instância criada, mas a configuração do webhook falhou. O bot de IA não vai responder até o webhook ser reconfigurado (use a ação 'setup-webhook').";
       }
 
-      return json({ instance: data.instance, qrcode: data.qrcode, hash: data.hash });
+      return json({ instance: data.instance, qrcode: data.qrcode, hash: data.hash, warning: webhookWarning });
     }
 
     // ============================================
@@ -197,23 +214,11 @@ Deno.serve(async (req) => {
         }
 
         // Ensure webhook is configured when instance connects
-        const webhookUrl = `${SUPABASE_URL}/functions/v1/ai-whatsapp-hook`;
         try {
-          await fetch(`${baseUrl}/webhook/set/${instance_name}`, {
-            method: "POST",
-            headers: { apikey: apiKey, "Content-Type": "application/json" },
-              body: JSON.stringify({
-                webhook: {
-                  url: webhookUrl,
-                  enabled: true,
-                  webhook_by_events: false,
-                  webhook_base64: false,
-                  events: ["MESSAGES_UPSERT"],
-                },
-              }),
-          });
+          await setEvolutionWebhook(instance_name);
         } catch (e) {
           console.error(`Failed to set webhook for ${instance_name}:`, e);
+          return json({ state, warning: "Conectado, mas a configuração do webhook falhou. O bot de IA não vai responder até o webhook ser reconfigurado (use a ação 'setup-webhook')." });
         }
       }
 
@@ -362,24 +367,10 @@ Deno.serve(async (req) => {
     if (action === "setup-webhook") {
       if (!instance_name) return json({ error: "instance_name is required" }, 400);
 
-      const webhookUrl = `${SUPABASE_URL}/functions/v1/ai-whatsapp-hook`;
-      const response = await fetch(`${baseUrl}/webhook/set/${instance_name}`, {
-        method: "POST",
-        headers: { apikey: apiKey, "Content-Type": "application/json" },
-        body: JSON.stringify({
-          webhook: {
-            url: webhookUrl,
-            enabled: true,
-            webhook_by_events: false,
-            webhook_base64: false,
-            events: ["MESSAGES_UPSERT"],
-          },
-        }),
-      });
-
-      if (!response.ok) {
-        const errText = await response.text();
-        return json({ error: `Erro ao configurar webhook: ${response.status} - ${errText}` }, 502);
+      try {
+        await setEvolutionWebhook(instance_name);
+      } catch (e) {
+        return json({ error: `Erro ao configurar webhook: ${e instanceof Error ? e.message : "Unknown error"}` }, 502);
       }
 
       return json({ success: true, message: "Webhook configurado com sucesso" });

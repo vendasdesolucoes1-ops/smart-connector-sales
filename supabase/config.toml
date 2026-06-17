@@ -1,1 +1,7 @@
 project_id = "komuatwnrmrmabzvqgjn"
+
+[functions.ai-whatsapp-hook]
+verify_jwt = false
+
+[functions.ai-follow-up]
+verify_jwt = false
