@@ -25,6 +25,9 @@ import CompanyForm from "./pages/CompanyForm";
 import MySeller from "./pages/MySeller";
 import CommCRM from "./pages/CommCRM";
 import Onboarding from "./pages/Onboarding";
+import InviteAccept from "./pages/InviteAccept";
+import AdminInvites from "./pages/AdminInvites";
+import { InvitationGate } from "@/components/InvitationGate";
 
 const queryClient = new QueryClient();
 
@@ -46,6 +49,7 @@ function AppRoutes() {
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/admin" element={<AdminAuth />} />
         <Route path="/auth" element={<Auth />} />
+        <Route path="/invite/:token" element={<InviteAccept />} />
         <Route path="/forms/:token" element={<CompanyForm />} />
         <Route path="*" element={<Navigate to="/auth" replace />} />
       </Routes>
@@ -53,30 +57,34 @@ function AppRoutes() {
   }
 
   return (
-    <Routes>
-      <Route element={<AppLayout />}>
-        <Route path="/" element={<Index />} />
-        <Route path="/whatsapp" element={<WhatsAppConnection />} />
-        <Route path="/prospecting" element={<Prospecting />} />
-        <Route path="/broadcasts" element={<Broadcasts />} />
-        <Route path="/comm-crm" element={<CommCRM />} />
-        <Route path="/leads" element={<Leads />} />
-        <Route path="/crm" element={<CRM />} />
-        <Route path="/ai" element={<AIPage />} />
-        <Route path="/my-seller" element={<MySeller />} />
-        <Route path="/company" element={<CompanyProfile />} />
-        <Route path="/settings" element={<SettingsPage />} />
-        <Route path="/appointments" element={<Appointments />} />
-      </Route>
-      <Route path="/onboarding" element={<Onboarding />} />
-      <Route path="/site" element={<Landing />} />
-      <Route path="/checkout" element={<Checkout />} />
-      <Route path="/admin" element={<AdminAuth />} />
-      <Route path="/admin/panel" element={<AdminPanel />} />
-      <Route path="/forms/:token" element={<CompanyForm />} />
-      <Route path="/auth" element={<Navigate to="/" replace />} />
-      <Route path="*" element={<NotFound />} />
-    </Routes>
+    <InvitationGate>
+      <Routes>
+        <Route element={<AppLayout />}>
+          <Route path="/" element={<Index />} />
+          <Route path="/whatsapp" element={<WhatsAppConnection />} />
+          <Route path="/prospecting" element={<Prospecting />} />
+          <Route path="/broadcasts" element={<Broadcasts />} />
+          <Route path="/comm-crm" element={<CommCRM />} />
+          <Route path="/leads" element={<Leads />} />
+          <Route path="/crm" element={<CRM />} />
+          <Route path="/ai" element={<AIPage />} />
+          <Route path="/my-seller" element={<MySeller />} />
+          <Route path="/company" element={<CompanyProfile />} />
+          <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/appointments" element={<Appointments />} />
+        </Route>
+        <Route path="/onboarding" element={<Onboarding />} />
+        <Route path="/admin/invites" element={<AdminInvites />} />
+        <Route path="/site" element={<Landing />} />
+        <Route path="/checkout" element={<Checkout />} />
+        <Route path="/admin" element={<AdminAuth />} />
+        <Route path="/admin/panel" element={<AdminPanel />} />
+        <Route path="/invite/:token" element={<InviteAccept />} />
+        <Route path="/forms/:token" element={<CompanyForm />} />
+        <Route path="/auth" element={<Navigate to="/" replace />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </InvitationGate>
   );
 }
 
