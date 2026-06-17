@@ -1,29 +1,42 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { getCorsHeaders } from "../_shared/cors.ts";
 
-const json = (data: unknown, status = 200) =>
-  new Response(JSON.stringify(data), {
-    status,
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
-  });
-
 Deno.serve(async (req) => {
   const corsHeaders = getCorsHeaders(req);
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+
+  const json = (data: unknown, status = 200) =>
+    new Response(JSON.stringify(data), {
+      status,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
 
   console.log("[manage-evolution] Request received");
 
   try {
     const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const supabaseAdmin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
-    // Global Evolution API credentials from secrets
-    const baseUrl = (Deno.env.get("EVOLUTION_API_URL") || "").replace(/\/$/, "");
-    const apiKey = Deno.env.get("EVOLUTION_API_KEY") || "";
+    // Global Evolution API credentials — configured by super admins via
+    // /super-admin/settings, stored in platform_settings (not Supabase secrets).
+    const { data: settingsRows, error: settingsErr } = await supabaseAdmin
+      .from("platform_settings")
+      .select("key, value")
+      .in("key", ["evolution_api_url", "evolution_api_key"]);
+
+    if (settingsErr) {
+      console.error("Failed to load platform_settings:", settingsErr);
+      return json({ error: "Erro ao carregar configurações da plataforma." }, 500);
+    }
+
+    const settingsMap = Object.fromEntries((settingsRows || []).map((r) => [r.key, r.value]));
+    const baseUrl = (settingsMap.evolution_api_url || "").replace(/\/$/, "");
+    const apiKey = settingsMap.evolution_api_key || "";
     const WEBHOOK_SECRET = Deno.env.get("EVOLUTION_WEBHOOK_SECRET") || "";
 
     if (!baseUrl || !apiKey) {
-      return json({ error: "Evolution API não configurada no sistema." }, 500);
+      return json({ error: "Evolution API não configurada em platform_settings. Configure em /super-admin/settings." }, 500);
     }
     if (!WEBHOOK_SECRET) {
       return json({ error: "EVOLUTION_WEBHOOK_SECRET não configurado no sistema." }, 500);
@@ -70,8 +83,6 @@ Deno.serve(async (req) => {
     const { action, org_id, instance_name } = body;
 
     if (!org_id) return json({ error: "org_id is required" }, 400);
-
-    const supabaseAdmin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
     // One instance per org, deterministic name — no longer user-supplied.
     const orgInstanceName = `org_${String(org_id).replace(/-/g, "")}`;
