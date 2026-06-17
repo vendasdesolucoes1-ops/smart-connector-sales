@@ -22,6 +22,23 @@ serve(async (req) => {
   const corsHeaders = getCorsHeaders(req);
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
+  const CRON_SECRET = Deno.env.get("CRON_SECRET") || "";
+  if (!CRON_SECRET) {
+    console.error("CRON_SECRET is not configured — rejecting all calls fail-closed.");
+    return new Response(JSON.stringify({ error: "Not configured" }), {
+      status: 500,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+  const receivedSecret = req.headers.get("x-cron-secret") || "";
+  if (receivedSecret !== CRON_SECRET) {
+    console.warn("Unauthorized ai-follow-up invocation attempt");
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+
   try {
     const supabaseAdmin = createClient(
       Deno.env.get("SUPABASE_URL")!,

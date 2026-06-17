@@ -14,15 +14,22 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   const WEBHOOK_SECRET = Deno.env.get("EVOLUTION_WEBHOOK_SECRET") || "";
-  if (WEBHOOK_SECRET) {
-    const receivedSecret = req.headers.get("x-webhook-secret") || "";
-    if (receivedSecret !== WEBHOOK_SECRET) {
-      console.warn("Unauthorized webhook attempt:", req.headers.get("x-forwarded-for"));
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
-        status: 401,
-        headers: { ...corsHeaders, "Content-Type": "application/json" }
-      });
-    }
+  if (!WEBHOOK_SECRET) {
+    console.error("EVOLUTION_WEBHOOK_SECRET is not configured — rejecting all webhook calls fail-closed.");
+    return new Response(JSON.stringify({ error: "Webhook not configured" }), {
+      status: 500,
+      headers: { ...corsHeaders, "Content-Type": "application/json" }
+    });
+  }
+  // Evolution's webhook config doesn't reliably support custom headers, so the
+  // shared secret is passed as a query param on the webhook URL instead.
+  const receivedSecret = new URL(req.url).searchParams.get("secret") || req.headers.get("x-webhook-secret") || "";
+  if (receivedSecret !== WEBHOOK_SECRET) {
+    console.warn("Unauthorized webhook attempt:", req.headers.get("x-forwarded-for"));
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { ...corsHeaders, "Content-Type": "application/json" }
+    });
   }
 
   try {
@@ -76,6 +83,7 @@ serve(async (req) => {
       .maybeSingle();
     const orgId = instRow?.org_id || null;
     if (!orgId) {
+      console.error(`Webhook received for unknown instance "${instanceName}" — no matching row in integration_instances. Message dropped: remoteJid=${remoteJid}`);
       return new Response(JSON.stringify({ error: "Instance not found" }), { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
