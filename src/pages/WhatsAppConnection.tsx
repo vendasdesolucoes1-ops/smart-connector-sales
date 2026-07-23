@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Smartphone, QrCode, Wifi, Loader2, CheckCircle2, MessageCircle, LogOut } from "lucide-react";
+import { Smartphone, QrCode, Wifi, Loader2, CheckCircle2, MessageCircle, LogOut, Settings2, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import WhatsAppChatViewer from "@/components/whatsapp/WhatsAppChatViewer";
@@ -8,7 +8,7 @@ import { useWhatsAppOrgInstance } from "@/hooks/useWhatsAppOrgInstance";
 
 export default function WhatsAppConnection() {
   const { profile } = useAuth();
-  const { state, qrCode, phoneNumber, connectWhatsApp, disconnectWhatsApp } = useWhatsAppOrgInstance();
+  const { state, qrCode, phoneNumber, error, connectWhatsApp, disconnectWhatsApp, checkStatus } = useWhatsAppOrgInstance();
   const [chatViewerOpen, setChatViewerOpen] = useState(false);
 
   const orgInstanceName = profile?.org_id ? `org_${profile.org_id.replace(/-/g, "")}` : "";
@@ -29,7 +29,7 @@ export default function WhatsAppConnection() {
 
       <div className="glass rounded-2xl p-8">
         {/* Estado 1 — sem instância */}
-        {(state === "idle" || state === "error") && (
+        {state === "idle" && (
           <div className="flex flex-col items-center text-center gap-6 py-6">
             <div className="flex h-24 w-24 items-center justify-center rounded-2xl bg-primary/10">
               <Smartphone className="h-10 w-10 text-primary" />
@@ -42,6 +42,40 @@ export default function WhatsAppConnection() {
             </div>
             <Button onClick={connectWhatsApp} className="rounded-xl gradient-primary gap-2 px-6">
               <QrCode className="h-4 w-4" /> Conectar WhatsApp
+            </Button>
+          </div>
+        )}
+
+        {/* Estado de configuração ausente — não é uma falha da página */}
+        {state === "unconfigured" && (
+          <div className="flex flex-col items-center text-center gap-5 py-6">
+            <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-warning/10">
+              <Settings2 className="h-9 w-9 text-warning" />
+            </div>
+            <div className="max-w-md">
+              <h3 className="font-semibold text-lg mb-2">Integração ainda não configurada</h3>
+              <p className="text-sm text-muted-foreground">
+                O WhatsApp precisa ser habilitado pelo administrador da plataforma antes de conectar um número.
+              </p>
+            </div>
+            <Button variant="outline" className="rounded-xl gap-2" onClick={() => void checkStatus()}>
+              <RefreshCw className="h-4 w-4" /> Verificar novamente
+            </Button>
+          </div>
+        )}
+
+        {/* Falha transitória ao consultar o serviço */}
+        {state === "error" && (
+          <div className="flex flex-col items-center text-center gap-5 py-6">
+            <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-destructive/10">
+              <Smartphone className="h-9 w-9 text-destructive" />
+            </div>
+            <div className="max-w-md">
+              <h3 className="font-semibold text-lg mb-2">Não foi possível carregar a conexão</h3>
+              <p className="text-sm text-muted-foreground">{error || "Tente consultar o status novamente."}</p>
+            </div>
+            <Button variant="outline" className="rounded-xl gap-2" onClick={() => void checkStatus()}>
+              <RefreshCw className="h-4 w-4" /> Tentar novamente
             </Button>
           </div>
         )}
