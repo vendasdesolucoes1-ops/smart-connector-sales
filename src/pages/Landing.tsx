@@ -42,18 +42,18 @@ function Reveal({
 function FAQItem({ question, answer }: { question: string; answer: string }) {
   const [open, setOpen] = useState(false);
   return (
-    <div className="border border-[#1f1612] rounded-xl overflow-hidden transition-colors hover:border-[#FFB366]/15">
+    <div className="border border-[#E6E6E1] rounded-xl overflow-hidden transition-colors hover:border-[#E63946]/15">
       <button
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between p-5 text-left hover:bg-[#120c08] transition-colors"
+        className="w-full flex items-center justify-between p-5 text-left hover:bg-[#F1F1EE] transition-colors"
         aria-expanded={open}
       >
-        <span className="font-medium text-sm md:text-base text-gray-200 pr-4">{question}</span>
-        <ChevronDown className={`h-4 w-4 text-[#FFB366] shrink-0 transition-transform duration-500 ${open ? "rotate-180" : ""}`} />
+        <span className="font-medium text-sm md:text-base text-[#0E0E10] pr-4">{question}</span>
+        <ChevronDown className={`h-4 w-4 text-[#E63946] shrink-0 transition-transform duration-500 ${open ? "rotate-180" : ""}`} />
       </button>
       <div className="grid transition-all duration-500 ease-out" style={{ gridTemplateRows: open ? "1fr" : "0fr", opacity: open ? 1 : 0 }}>
         <div className="overflow-hidden">
-          <p className="px-5 pb-5 text-sm text-gray-400 leading-relaxed">{answer}</p>
+          <p className="px-5 pb-5 text-sm text-[#55555C] leading-relaxed">{answer}</p>
         </div>
       </div>
     </div>
@@ -76,9 +76,9 @@ const WAButton = ({
   const base = "inline-flex items-center gap-2 px-5 py-3 rounded-lg text-sm font-semibold transition-all duration-300";
   const styles: Record<string, string> = {
     primary:
-      "bg-gradient-to-r from-[#FFB366] to-[#FF6B1A] text-[#0a0705] hover:shadow-[0_0_30px_rgba(255,107,26,0.45)] hover:scale-[1.02]",
+      "bg-gradient-to-r from-[#E63946] to-[#C1121F] text-[#0E0E10] hover:shadow-[0_0_30px_rgba(230,57,70,0.45)] hover:scale-[1.02]",
     ghost: "text-gray-300 hover:text-white border border-white/10 hover:border-white/25",
-    outline: "border border-[#FFB366]/30 text-[#FFB366] hover:bg-[#FFB366]/10",
+    outline: "border border-[#E63946]/30 text-[#E63946] hover:bg-[#E63946]/10",
   };
   return (
     <a
@@ -133,7 +133,7 @@ function ScrollStage({ progress }: { progress: MotionValue<number> }) {
         className="absolute inset-0 opacity-[0.05] pointer-events-none"
         style={{
           backgroundImage:
-            "linear-gradient(rgba(255,179,102,1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,179,102,1) 1px, transparent 1px)",
+            "linear-gradient(rgba(230,57,70,1) 1px, transparent 1px), linear-gradient(90deg, rgba(230,57,70,1) 1px, transparent 1px)",
           backgroundSize: "80px 80px",
         }}
       />
@@ -142,7 +142,7 @@ function ScrollStage({ progress }: { progress: MotionValue<number> }) {
         className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[80%] rounded-full blur-[120px] pointer-events-none"
         style={{
           background:
-            "radial-gradient(closest-side, rgba(255,107,26,0.35), rgba(255,179,102,0.08) 60%, transparent 70%)",
+            "radial-gradient(closest-side, rgba(230,57,70,0.35), rgba(230,57,70,0.08) 60%, transparent 70%)",
           opacity: glow,
         }}
       />
@@ -150,7 +150,7 @@ function ScrollStage({ progress }: { progress: MotionValue<number> }) {
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 w-full grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
         {/* Left: morphing copy */}
         <div className="relative min-h-[360px] sm:min-h-[420px]">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-[#FFB366]/20 bg-[#FFB366]/5 text-[10px] text-[#FFB366] font-medium mb-5 tracking-[0.2em] uppercase">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-[#E63946]/20 bg-[#E63946]/5 text-[10px] text-[#E63946] font-medium mb-5 tracking-[0.2em] uppercase">
             <Sparkles className="h-3 w-3" /> VS Soluções Labs
           </div>
 
@@ -160,11 +160,11 @@ function ScrollStage({ progress }: { progress: MotionValue<number> }) {
               style={{ opacity: scene1Op, y: scene1Y }}
             >
               <h1
-                style={{ fontFamily: "'Bebas Neue', sans-serif" }}
+                style={{ fontFamily: "'Space Grotesk', sans-serif" }}
                 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-[0.92] tracking-tight"
               >
                 Sua equipe comercial<br />
-                <span className="bg-gradient-to-r from-[#FFB366] via-[#FF8C3C] to-[#FF6B1A] bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-[#E63946] via-[#D62F3D] to-[#C1121F] bg-clip-text text-transparent">
                   inteira. Só que é IA.
                 </span>
               </h1>
@@ -178,12 +178,12 @@ function ScrollStage({ progress }: { progress: MotionValue<number> }) {
               style={{ opacity: scene2Op, y: scene2Y }}
             >
               <h1
-                style={{ fontFamily: "'Bebas Neue', sans-serif" }}
+                style={{ fontFamily: "'Space Grotesk', sans-serif" }}
                 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-[0.92] tracking-tight"
               >
                 Prospecta.<br />
                 Qualifica.<br />
-                <span className="text-[#FFB366]">Fecha.</span>
+                <span className="text-[#E63946]">Fecha.</span>
               </h1>
               <p className="text-gray-400 text-sm sm:text-base leading-relaxed mt-5 max-w-md">
                 Da primeira mensagem ao agendamento da reunião, sem você tocar no teclado.
@@ -195,10 +195,10 @@ function ScrollStage({ progress }: { progress: MotionValue<number> }) {
               style={{ opacity: scene3Op, y: scene3Y }}
             >
               <h1
-                style={{ fontFamily: "'Bebas Neue', sans-serif" }}
+                style={{ fontFamily: "'Space Grotesk', sans-serif" }}
                 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-[0.92] tracking-tight"
               >
-                E ainda <span className="text-[#FF6B1A]">vende</span><br />
+                E ainda <span className="text-[#E63946]">vende</span><br />
                 enquanto você dorme.
               </h1>
               <p className="text-gray-400 text-sm sm:text-base leading-relaxed mt-5 max-w-md">
@@ -222,9 +222,9 @@ function ScrollStage({ progress }: { progress: MotionValue<number> }) {
           </div>
 
           <div className="mt-5 flex items-center gap-4 text-[10px] text-gray-600">
-            <span className="flex items-center gap-1"><CheckCircle2 className="h-3 w-3 text-[#FFB366]/60" />Sem compromisso</span>
-            <span className="flex items-center gap-1"><CheckCircle2 className="h-3 w-3 text-[#FFB366]/60" />Setup &lt; 48h</span>
-            <span className="flex items-center gap-1"><CheckCircle2 className="h-3 w-3 text-[#FFB366]/60" />100% no WhatsApp</span>
+            <span className="flex items-center gap-1"><CheckCircle2 className="h-3 w-3 text-[#E63946]/60" />Sem compromisso</span>
+            <span className="flex items-center gap-1"><CheckCircle2 className="h-3 w-3 text-[#E63946]/60" />Setup &lt; 48h</span>
+            <span className="flex items-center gap-1"><CheckCircle2 className="h-3 w-3 text-[#E63946]/60" />100% no WhatsApp</span>
           </div>
         </div>
 
@@ -234,12 +234,12 @@ function ScrollStage({ progress }: { progress: MotionValue<number> }) {
             className="relative will-change-transform"
             style={{ scale: dashScale, rotate: dashRotate, y: dashY }}
           >
-            <div className="absolute -inset-6 bg-[#FFB366]/[0.05] rounded-3xl blur-2xl" />
+            <div className="absolute -inset-6 bg-[#E63946]/[0.05] rounded-3xl blur-2xl" />
             <div
-              className="relative rounded-2xl border border-[#FFB366]/20 bg-[#0d0a08]/95 p-1 overflow-hidden backdrop-blur-sm"
-              style={{ boxShadow: "0 30px 80px -20px rgba(255,107,26,0.25)" }}
+              className="relative rounded-2xl border border-[#E63946]/20 bg-[#141417]/95 p-1 overflow-hidden backdrop-blur-sm"
+              style={{ boxShadow: "0 30px 80px -20px rgba(230,57,70,0.25)" }}
             >
-              <div className="rounded-xl bg-[#0d0a08] p-4">
+              <div className="rounded-xl bg-[#141417] p-4">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-1.5">
                     <div className="h-2.5 w-2.5 rounded-full bg-red-500/50" />
@@ -250,23 +250,23 @@ function ScrollStage({ progress }: { progress: MotionValue<number> }) {
                 </div>
                 <div className="grid grid-cols-3 gap-2 mb-3">
                   {[
-                    { label: "Leads Hoje", val: "47", change: "+12%", color: "#FFB366" },
-                    { label: "Pipeline", val: "R$ 234k", change: "+8%", color: "#FF6B1A" },
-                    { label: "Conversão", val: "23%", change: "+5pp", color: "#FFB366" },
+                    { label: "Leads Hoje", val: "47", change: "+12%", color: "#E63946" },
+                    { label: "Pipeline", val: "R$ 234k", change: "+8%", color: "#E63946" },
+                    { label: "Conversão", val: "23%", change: "+5pp", color: "#E63946" },
                   ].map((m) => (
-                    <div key={m.label} className="rounded-lg border border-[#1f1612] bg-[#0f0a08] p-2.5">
+                    <div key={m.label} className="rounded-lg border border-[#2B2B31] bg-[#141417] p-2.5">
                       <p className="text-[8px] text-gray-500 uppercase tracking-wider">{m.label}</p>
                       <div className="flex items-baseline gap-1.5 mt-1">
-                        <p className="text-base font-bold text-white" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>{m.val}</p>
+                        <p className="text-base font-bold text-white" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>{m.val}</p>
                         <p className="text-[8px] font-medium" style={{ color: m.color }}>{m.change}</p>
                       </div>
                     </div>
                   ))}
                 </div>
-                <div className="rounded-lg border border-[#1f1612] bg-[#0f0a08] p-3 mb-3">
+                <div className="rounded-lg border border-[#2B2B31] bg-[#141417] p-3 mb-3">
                   <div className="flex items-center justify-between mb-2">
                     <p className="text-[8px] text-gray-500 uppercase tracking-wider">Leads últimos 7 dias</p>
-                    <p className="text-[8px] text-[#FFB366]">+34%</p>
+                    <p className="text-[8px] text-[#E63946]">+34%</p>
                   </div>
                   <div className="flex items-end gap-1 h-16">
                     {[30, 45, 35, 60, 50, 75, 65].map((h, i) => (
@@ -277,8 +277,8 @@ function ScrollStage({ progress }: { progress: MotionValue<number> }) {
                           height: `${h}%`,
                           background:
                             i === 6
-                              ? "linear-gradient(to top, #FFB366, #FF6B1A)"
-                              : "linear-gradient(to top, #FFB36620, #FF6B1A30)",
+                              ? "linear-gradient(to top, #E63946, #E63946)"
+                              : "linear-gradient(to top, #E6394620, #E6394630)",
                         }}
                       />
                     ))}
@@ -286,14 +286,14 @@ function ScrollStage({ progress }: { progress: MotionValue<number> }) {
                 </div>
                 <div className="flex items-center gap-1.5">
                   {[
-                    { label: "Novo", count: 23, color: "#FFB366" },
-                    { label: "Qualificado", count: 15, color: "#FF6B1A" },
-                    { label: "Proposta", count: 8, color: "#FF8C3C" },
-                    { label: "Fechado", count: 4, color: "#FFB366" },
+                    { label: "Novo", count: 23, color: "#E63946" },
+                    { label: "Qualificado", count: 15, color: "#E63946" },
+                    { label: "Proposta", count: 8, color: "#E63946" },
+                    { label: "Fechado", count: 4, color: "#E63946" },
                   ].map((s) => (
-                    <div key={s.label} className="flex-1 rounded-lg border border-[#1f1612] bg-[#0f0a08] p-2 text-center">
+                    <div key={s.label} className="flex-1 rounded-lg border border-[#2B2B31] bg-[#141417] p-2 text-center">
                       <p className="text-[7px] text-gray-600 uppercase">{s.label}</p>
-                      <p className="text-sm font-bold mt-0.5" style={{ color: s.color, fontFamily: "'Bebas Neue', sans-serif" }}>{s.count}</p>
+                      <p className="text-sm font-bold mt-0.5" style={{ color: s.color, fontFamily: "'Space Grotesk', sans-serif" }}>{s.count}</p>
                     </div>
                   ))}
                 </div>
@@ -303,12 +303,12 @@ function ScrollStage({ progress }: { progress: MotionValue<number> }) {
 
           {/* Floating event cards orbiting the dashboard */}
           <motion.div
-            className="absolute -top-4 -left-6 rounded-xl border border-[#FFB366]/25 bg-[#0f0a08]/95 backdrop-blur-md p-3 shadow-xl max-w-[210px]"
+            className="absolute -top-4 -left-6 rounded-xl border border-[#E63946]/25 bg-[#141417]/95 backdrop-blur-md p-3 shadow-xl max-w-[210px]"
             style={{ opacity: card1, y: card1Y }}
           >
             <div className="flex items-center gap-2">
-              <div className="h-7 w-7 rounded-lg bg-[#FFB366]/15 flex items-center justify-center">
-                <MessageCircle className="h-3.5 w-3.5 text-[#FFB366]" />
+              <div className="h-7 w-7 rounded-lg bg-[#E63946]/15 flex items-center justify-center">
+                <MessageCircle className="h-3.5 w-3.5 text-[#E63946]" />
               </div>
               <div>
                 <p className="text-[10px] font-semibold text-white">Novo lead qualificado</p>
@@ -318,11 +318,11 @@ function ScrollStage({ progress }: { progress: MotionValue<number> }) {
           </motion.div>
 
           <motion.div
-            className="absolute top-1/2 -right-6 -translate-y-1/2 rounded-xl border border-[#FF6B1A]/25 bg-[#0f0a08]/95 backdrop-blur-md p-3 shadow-xl"
+            className="absolute top-1/2 -right-6 -translate-y-1/2 rounded-xl border border-[#E63946]/25 bg-[#141417]/95 backdrop-blur-md p-3 shadow-xl"
             style={{ opacity: card2, x: card2X }}
           >
             <div className="flex items-center gap-2">
-              <CalendarCheck className="h-4 w-4 text-[#FF6B1A]" />
+              <CalendarCheck className="h-4 w-4 text-[#E63946]" />
               <div>
                 <p className="text-[10px] font-semibold text-white">Reunião agendada</p>
                 <p className="text-[9px] text-gray-500">Automático · 14:30</p>
@@ -331,7 +331,7 @@ function ScrollStage({ progress }: { progress: MotionValue<number> }) {
           </motion.div>
 
           <motion.div
-            className="absolute -bottom-4 left-12 rounded-xl border border-emerald-500/25 bg-[#0f0a08]/95 backdrop-blur-md p-3 shadow-xl"
+            className="absolute -bottom-4 left-12 rounded-xl border border-emerald-500/25 bg-[#141417]/95 backdrop-blur-md p-3 shadow-xl"
             style={{ opacity: card3, y: card3Y }}
           >
             <div className="flex items-center gap-2">
@@ -375,13 +375,13 @@ export default function Landing() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#0a0705] text-white">
+    <div className="min-h-screen bg-[#0E0E10] text-white">
       {/* ═══ NAVBAR ═══ */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-[#0a0705]/80 backdrop-blur-xl border-b border-white/5">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-[#0E0E10]/80 backdrop-blur-xl border-b border-white/5">
         <div className="max-w-7xl mx-auto px-4 sm:px-5 h-14 flex items-center justify-between">
           <a href="#" className="flex items-center gap-2">
             <Logo variant="dark" className="h-8 w-auto" />
-            <span style={{ fontFamily: "'Bebas Neue', sans-serif" }} className="text-lg tracking-[0.18em]">SALES</span>
+            <span style={{ fontFamily: "'Space Grotesk', sans-serif" }} className="text-lg tracking-[0.18em]">SALES</span>
           </a>
           <div className="hidden md:flex items-center gap-6 text-xs text-gray-400">
             <a href="#problema" className="hover:text-white transition-colors">Problema</a>
@@ -398,7 +398,7 @@ export default function Landing() {
               href={whatsappLink("explore")}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-xs font-semibold px-3 sm:px-4 py-2 rounded-lg bg-gradient-to-r from-[#FFB366] to-[#FF6B1A] text-[#0a0705] hover:shadow-[0_0_20px_rgba(255,107,26,0.45)] transition-all flex items-center gap-1.5"
+              className="text-xs font-semibold px-3 sm:px-4 py-2 rounded-lg bg-gradient-to-r from-[#E63946] to-[#C1121F] text-[#0E0E10] hover:shadow-[0_0_20px_rgba(230,57,70,0.45)] transition-all flex items-center gap-1.5"
             >
               <MessageCircle className="h-3.5 w-3.5" />
               Falar conosco
@@ -413,8 +413,13 @@ export default function Landing() {
       </section>
 
       {/* ═══ 2. CREDIBILIDADE ═══ */}
-      <section className="py-10 sm:py-14 border-y border-[#1f1612]/60 bg-[#0d0a08]/40">
+      <section className="py-10 sm:py-14 border-y border-[#E6E6E1] bg-[#FAFAF8] text-[#0E0E10]">
         <div className="max-w-5xl mx-auto px-4 sm:px-5">
+          <Reveal>
+            <p className="text-center text-xl sm:text-2xl md:text-3xl font-bold tracking-tight mb-8" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+              Seu negócio é único. <span className="text-[#E63946]">Seu software também deveria ser.</span>
+            </p>
+          </Reveal>
           <Reveal>
             <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-10 text-center">
               {[
@@ -424,12 +429,12 @@ export default function Landing() {
                 { label: "Resposta", value: "< 5 min", sub: "ao novo lead" },
               ].map((item) => (
                 <div key={item.label} className="flex items-center gap-3">
-                  <p className="text-2xl sm:text-3xl font-bold text-[#FFB366]" style={{ fontFamily: "'Bebas Neue', sans-serif", letterSpacing: "0.05em" }}>
+                  <p className="text-2xl sm:text-3xl font-bold text-[#E63946]" style={{ fontFamily: "'Space Grotesk', sans-serif", letterSpacing: "0.05em" }}>
                     {item.value}
                   </p>
                   <div className="text-left">
-                    <p className="text-[10px] text-gray-400 uppercase tracking-wider leading-tight">{item.label}</p>
-                    <p className="text-[9px] text-gray-600">{item.sub}</p>
+                    <p className="text-[10px] text-[#55555C] uppercase tracking-wider leading-tight">{item.label}</p>
+                    <p className="text-[9px] text-[#8b8b92]">{item.sub}</p>
                   </div>
                 </div>
               ))}
@@ -442,8 +447,8 @@ export default function Landing() {
       <section id="problema" className="py-16 sm:py-24 md:py-32 relative">
         <div className="max-w-6xl mx-auto px-4 sm:px-5">
           <Reveal>
-            <p className="text-[10px] uppercase tracking-[0.3em] text-[#FFB366] font-medium mb-3">O problema</p>
-            <h2 style={{ fontFamily: "'Bebas Neue', sans-serif" }} className="text-3xl sm:text-4xl md:text-5xl tracking-tight mb-4">
+            <p className="text-[10px] uppercase tracking-[0.3em] text-[#E63946] font-medium mb-3">O problema</p>
+            <h2 style={{ fontFamily: "'Space Grotesk', sans-serif" }} className="text-3xl sm:text-4xl md:text-5xl tracking-tight mb-4">
               Seu time comercial está te custando<br className="hidden sm:block" />
               <span className="text-gray-500">mais do que deveria.</span>
             </h2>
@@ -460,7 +465,7 @@ export default function Landing() {
               { icon: BarChart3, title: "Pipeline fictício", desc: "CRM desatualizado, forecast que não bate, decisões no achismo. Todo mês a mesma história." },
             ].map((card, i) => (
               <Reveal key={card.title} delay={i * 100}>
-                <div className="group p-5 rounded-xl border border-[#1f1612] bg-[#0f0a08]/60 hover:border-red-500/25 hover:bg-red-500/[0.03] transition-all duration-300">
+                <div className="group p-5 rounded-xl border border-[#2B2B31] bg-[#141417]/60 hover:border-red-500/25 hover:bg-red-500/[0.03] transition-all duration-300">
                   <card.icon className="h-5 w-5 text-red-400/80 mb-3" />
                   <h3 className="text-sm font-semibold text-white mb-1.5">{card.title}</h3>
                   <p className="text-xs text-gray-500 leading-relaxed">{card.desc}</p>
@@ -472,15 +477,14 @@ export default function Landing() {
       </section>
 
       {/* ═══ 4. SOLUÇÃO ═══ */}
-      <section id="solucao" className="py-16 sm:py-24 md:py-32 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#FFB366]/[0.02] to-transparent" />
+      <section id="solucao" className="py-16 sm:py-24 md:py-32 relative overflow-hidden bg-[#FAFAF8] text-[#0E0E10]">
         <div className="max-w-6xl mx-auto px-4 sm:px-5 relative z-10">
           <Reveal>
-            <p className="text-[10px] uppercase tracking-[0.3em] text-[#FFB366] font-medium mb-3 text-center">A solução</p>
-            <h2 style={{ fontFamily: "'Bebas Neue', sans-serif" }} className="text-3xl sm:text-4xl md:text-5xl tracking-tight mb-4 text-center">
+            <p className="text-[10px] uppercase tracking-[0.3em] text-[#E63946] font-medium mb-3 text-center">A solução</p>
+            <h2 style={{ fontFamily: "'Space Grotesk', sans-serif" }} className="text-3xl sm:text-4xl md:text-5xl tracking-tight mb-4 text-center">
               Conheça o VS SALES
             </h2>
-            <p className="text-gray-400 text-sm max-w-2xl mx-auto text-center mb-12">
+            <p className="text-[#55555C] text-sm max-w-2xl mx-auto text-center mb-12">
               Plataforma de IA que substitui SDR, BDR e Closer. Prospecta, qualifica, agenda e fecha — automatizado,
               24h por dia, 7 dias por semana.
             </p>
@@ -488,16 +492,16 @@ export default function Landing() {
 
           <div className="grid sm:grid-cols-2 gap-4 max-w-4xl mx-auto">
             {[
-              { icon: BotMessageSquare, title: "IA Vendedora 24/7", desc: "Três agentes autônomos (SDR, BDR, Closer) que nunca dormem.", color: "#FFB366" },
-              { icon: MessageCircle, title: "WhatsApp como canal", desc: "Integração nativa. Abordagem personalizada, follow-up automático.", color: "#FF6B1A" },
-              { icon: BarChart3, title: "CRM que se atualiza sozinho", desc: "Pipeline em tempo real, sem digitação manual.", color: "#FFB366" },
-              { icon: Brain, title: "IA que aprende seu negócio", desc: "Treine com seus documentos, FAQs e tom de voz.", color: "#FF6B1A" },
+              { icon: BotMessageSquare, title: "IA Vendedora 24/7", desc: "Três agentes autônomos (SDR, BDR, Closer) que nunca dormem.", color: "#E63946" },
+              { icon: MessageCircle, title: "WhatsApp como canal", desc: "Integração nativa. Abordagem personalizada, follow-up automático.", color: "#E63946" },
+              { icon: BarChart3, title: "CRM que se atualiza sozinho", desc: "Pipeline em tempo real, sem digitação manual.", color: "#E63946" },
+              { icon: Brain, title: "IA que aprende seu negócio", desc: "Treine com seus documentos, FAQs e tom de voz.", color: "#E63946" },
             ].map((f, i) => (
               <Reveal key={f.title} delay={i * 100}>
-                <div className="group p-6 rounded-xl border border-[#1f1612] bg-[#0f0a08]/60 hover:border-[#FFB366]/20 transition-all duration-300">
+                <div className="group p-6 rounded-xl border border-[#E6E6E1] bg-white hover:border-[#E63946]/20 transition-all duration-300">
                   <f.icon className="h-6 w-6 mb-3" style={{ color: f.color }} />
-                  <h3 className="text-sm font-semibold text-white mb-1.5">{f.title}</h3>
-                  <p className="text-xs text-gray-500 leading-relaxed">{f.desc}</p>
+                  <h3 className="text-sm font-semibold text-[#0E0E10] mb-1.5">{f.title}</h3>
+                  <p className="text-xs text-[#55555C] leading-relaxed">{f.desc}</p>
                 </div>
               </Reveal>
             ))}
@@ -509,23 +513,23 @@ export default function Landing() {
       <section id="como-funciona" className="py-16 sm:py-24 md:py-32 relative overflow-hidden">
         <div className="max-w-6xl mx-auto px-4 sm:px-5 relative z-10">
           <Reveal>
-            <p className="text-[10px] uppercase tracking-[0.3em] text-[#FFB366] font-medium mb-3 text-center">Como funciona</p>
-            <h2 style={{ fontFamily: "'Bebas Neue', sans-serif" }} className="text-3xl sm:text-4xl md:text-5xl tracking-tight mb-3 text-center">
+            <p className="text-[10px] uppercase tracking-[0.3em] text-[#E63946] font-medium mb-3 text-center">Como funciona</p>
+            <h2 style={{ fontFamily: "'Space Grotesk', sans-serif" }} className="text-3xl sm:text-4xl md:text-5xl tracking-tight mb-3 text-center">
               Da prospecção ao fechamento.
             </h2>
-            <p style={{ fontFamily: "'Bebas Neue', sans-serif" }} className="text-3xl sm:text-4xl md:text-5xl tracking-tight mb-14 text-center text-gray-500">
+            <p style={{ fontFamily: "'Space Grotesk', sans-serif" }} className="text-3xl sm:text-4xl md:text-5xl tracking-tight mb-14 text-center text-gray-500">
               Sem intervenção humana.
             </p>
           </Reveal>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-6">
             {[
-              { emoji: "🔍", title: "Prospecção", desc: "IA mapeia leads do seu ICP em tempo real.", color: "#FFB366" },
-              { emoji: "🧩", title: "Enriquecimento", desc: "Contato, empresa, cargo automáticos.", color: "#FF8C3C" },
-              { emoji: "🎯", title: "Qualificação", desc: "Score 0-100. Só lead quente avança.", color: "#FF6B1A" },
-              { emoji: "💬", title: "Abordagem", desc: "Mensagem personalizada via WhatsApp.", color: "#FF6B1A" },
-              { emoji: "📅", title: "Agendamento", desc: "Reunião marcada sem ping-pong.", color: "#FF8C3C" },
-              { emoji: "💰", title: "Fechamento", desc: "IA conduz ou encaminha ao Closer.", color: "#FFB366" },
+              { emoji: "🔍", title: "Prospecção", desc: "IA mapeia leads do seu ICP em tempo real.", color: "#E63946" },
+              { emoji: "🧩", title: "Enriquecimento", desc: "Contato, empresa, cargo automáticos.", color: "#E63946" },
+              { emoji: "🎯", title: "Qualificação", desc: "Score 0-100. Só lead quente avança.", color: "#E63946" },
+              { emoji: "💬", title: "Abordagem", desc: "Mensagem personalizada via WhatsApp.", color: "#E63946" },
+              { emoji: "📅", title: "Agendamento", desc: "Reunião marcada sem ping-pong.", color: "#E63946" },
+              { emoji: "💰", title: "Fechamento", desc: "IA conduz ou encaminha ao Closer.", color: "#E63946" },
             ].map((step, i) => (
               <Reveal key={step.title} delay={i * 100}>
                 <div className="flex flex-col items-center text-center">
@@ -551,14 +555,14 @@ export default function Landing() {
 
           <Reveal delay={500}>
             <div className="mt-16 flex items-center justify-center">
-              <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full border border-[#FFB366]/20 bg-[#FFB366]/[0.04]">
+              <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full border border-[#E63946]/20 bg-[#E63946]/[0.04]">
                 <div className="flex -space-x-1">
-                  {["#FFB366", "#FF6B1A", "#FF8C3C"].map((c) => (
+                  {["#E63946", "#E63946", "#E63946"].map((c) => (
                     <div key={c} className="h-2 w-2 rounded-full" style={{ backgroundColor: c }} />
                   ))}
                 </div>
                 <p className="text-xs text-gray-400">
-                  Tudo isso em <span className="text-[#FFB366] font-semibold">modo 100% automático</span>
+                  Tudo isso em <span className="text-[#E63946] font-semibold">modo 100% automático</span>
                 </p>
               </div>
             </div>
@@ -567,40 +571,40 @@ export default function Landing() {
       </section>
 
       {/* ═══ 6. PARA QUEM É ═══ */}
-      <section className="py-16 sm:py-24 md:py-32 bg-[#0d0a08]/40">
+      <section className="py-16 sm:py-24 md:py-32 bg-[#FAFAF8] text-[#0E0E10]">
         <div className="max-w-6xl mx-auto px-4 sm:px-5">
           <Reveal>
-            <p className="text-[10px] uppercase tracking-[0.3em] text-[#FFB366] font-medium mb-3 text-center">Para quem é</p>
-            <h2 style={{ fontFamily: "'Bebas Neue', sans-serif" }} className="text-3xl sm:text-4xl md:text-5xl tracking-tight mb-4 text-center">
-              Pensado para quem quer vender mais<br /><span className="text-gray-500">gastando menos.</span>
+            <p className="text-[10px] uppercase tracking-[0.3em] text-[#E63946] font-medium mb-3 text-center">Para quem é</p>
+            <h2 style={{ fontFamily: "'Space Grotesk', sans-serif" }} className="text-3xl sm:text-4xl md:text-5xl tracking-tight mb-4 text-center">
+              Pensado para quem quer vender mais<br /><span className="text-[#55555C]">gastando menos.</span>
             </h2>
           </Reveal>
 
           <div className="grid md:grid-cols-3 gap-4 mt-14">
             {[
               {
-                icon: Rocket, color: "#FFB366", title: "Startups B2B",
+                icon: Rocket, color: "#E63946", title: "Startups B2B",
                 desc: "Você não tem verba pra contratar 3 SDRs, mas precisa de pipeline. O VS SALES é seu time inteiro por uma fração do custo.",
                 scenario: '"Tínhamos 0 SDRs e precisávamos de 50 reuniões/mês. Agora temos."',
               },
               {
-                icon: Building2, color: "#FF6B1A", title: "PMEs com time enxuto",
+                icon: Building2, color: "#E63946", title: "PMEs com time enxuto",
                 desc: "Seu vendedor prospecta, qualifica, fecha e ainda faz pós-venda. Com o VS SALES, ele só faz o que importa: fechar.",
                 scenario: '"Meu closer recebe leads quentes prontos. Triplicou a conversão."',
               },
               {
-                icon: Globe, color: "#FFB366", title: "Agências que revendem",
+                icon: Globe, color: "#E63946", title: "Agências que revendem",
                 desc: "White-label pronto. Coloque sua marca, revenda para seus clientes e ganhe receita recorrente.",
                 scenario: '"Adicionei receita recorrente revendendo o VS SALES."',
               },
             ].map((card, i) => (
               <Reveal key={card.title} delay={i * 120}>
-                <div className="rounded-xl border border-[#1f1612] bg-[#0f0a08]/60 p-6 h-full flex flex-col hover:border-[#FFB366]/20 transition-all duration-300">
+                <div className="rounded-xl border border-[#E6E6E1] bg-white p-6 h-full flex flex-col hover:border-[#E63946]/20 transition-all duration-300">
                   <card.icon className="h-6 w-6 mb-4" style={{ color: card.color }} />
-                  <h3 className="text-base font-semibold text-white mb-2">{card.title}</h3>
-                  <p className="text-xs text-gray-400 leading-relaxed mb-4 flex-1">{card.desc}</p>
-                  <div className="rounded-lg bg-[#FFB366]/[0.04] border border-[#FFB366]/10 p-3">
-                    <p className="text-[11px] text-[#FFB366] italic leading-relaxed">{card.scenario}</p>
+                  <h3 className="text-base font-semibold text-[#0E0E10] mb-2">{card.title}</h3>
+                  <p className="text-xs text-[#55555C] leading-relaxed mb-4 flex-1">{card.desc}</p>
+                  <div className="rounded-lg bg-[#E63946]/[0.04] border border-[#E63946]/10 p-3">
+                    <p className="text-[11px] text-[#E63946] italic leading-relaxed">{card.scenario}</p>
                   </div>
                 </div>
               </Reveal>
@@ -613,8 +617,8 @@ export default function Landing() {
       <section id="diferenciais" className="py-16 sm:py-24 md:py-32">
         <div className="max-w-6xl mx-auto px-4 sm:px-5">
           <Reveal>
-            <p className="text-[10px] uppercase tracking-[0.3em] text-[#FFB366] font-medium mb-3 text-center">Diferenciais</p>
-            <h2 style={{ fontFamily: "'Bebas Neue', sans-serif" }} className="text-3xl sm:text-4xl md:text-5xl tracking-tight mb-4 text-center">
+            <p className="text-[10px] uppercase tracking-[0.3em] text-[#E63946] font-medium mb-3 text-center">Diferenciais</p>
+            <h2 style={{ fontFamily: "'Space Grotesk', sans-serif" }} className="text-3xl sm:text-4xl md:text-5xl tracking-tight mb-4 text-center">
               Tudo que você precisa.<br /><span className="text-gray-500">Nada que você não precisa.</span>
             </h2>
           </Reveal>
@@ -629,8 +633,8 @@ export default function Landing() {
               { icon: CalendarCheck, title: "Agendamento Automático", desc: "A IA marca reuniões direto na agenda do Closer." },
             ].map((f, i) => (
               <Reveal key={f.title} delay={i * 80}>
-                <div className="group p-5 rounded-xl border border-[#1f1612] bg-[#0f0a08]/60 hover:border-[#FFB366]/25 hover:bg-[#FFB366]/[0.02] transition-all duration-300">
-                  <f.icon className="h-5 w-5 text-[#FFB366] mb-3 group-hover:scale-110 transition-transform" />
+                <div className="group p-5 rounded-xl border border-[#2B2B31] bg-[#141417]/60 hover:border-[#E63946]/25 hover:bg-[#E63946]/[0.02] transition-all duration-300">
+                  <f.icon className="h-5 w-5 text-[#E63946] mb-3 group-hover:scale-110 transition-transform" />
                   <h3 className="text-sm font-semibold text-white mb-1.5">{f.title}</h3>
                   <p className="text-xs text-gray-500 leading-relaxed">{f.desc}</p>
                 </div>
@@ -641,12 +645,12 @@ export default function Landing() {
       </section>
 
       {/* ═══ 8. COMPARATIVO (sem preços) ═══ */}
-      <section id="comparativo" className="py-16 sm:py-24 md:py-32 bg-[#0d0a08]/40">
+      <section id="comparativo" className="py-16 sm:py-24 md:py-32 bg-[#FAFAF8] text-[#0E0E10]">
         <div className="max-w-4xl mx-auto px-4 sm:px-5">
           <Reveal>
-            <p className="text-[10px] uppercase tracking-[0.3em] text-[#FFB366] font-medium mb-3 text-center">Comparativo</p>
-            <h2 style={{ fontFamily: "'Bebas Neue', sans-serif" }} className="text-3xl sm:text-4xl md:text-5xl tracking-tight mb-14 text-center">
-              Time Humano <span className="text-gray-500">vs</span> VS SALES
+            <p className="text-[10px] uppercase tracking-[0.3em] text-[#E63946] font-medium mb-3 text-center">Comparativo</p>
+            <h2 style={{ fontFamily: "'Space Grotesk', sans-serif" }} className="text-3xl sm:text-4xl md:text-5xl tracking-tight mb-14 text-center">
+              Time Humano <span className="text-[#55555C]">vs</span> VS SALES
             </h2>
           </Reveal>
 
@@ -655,10 +659,10 @@ export default function Landing() {
               <table className="w-full text-sm">
                 <thead>
                   <tr>
-                    <th className="text-left p-4 text-gray-500 text-xs font-medium" />
-                    <th className="p-4 text-center text-gray-400 text-xs font-medium">Time Humano</th>
-                    <th className="p-4 text-center rounded-t-xl border-t border-x border-[#FFB366]/30 bg-[#FFB366]/[0.04]">
-                      <span className="text-xs font-semibold text-[#FFB366]">VS SALES</span>
+                    <th className="text-left p-4 text-[#55555C] text-xs font-medium" />
+                    <th className="p-4 text-center text-[#55555C] text-xs font-medium">Time Humano</th>
+                    <th className="p-4 text-center rounded-t-xl border-t border-x border-[#E63946]/30 bg-[#E63946]/[0.04]">
+                      <span className="text-xs font-semibold text-[#E63946]">VS SALES</span>
                     </th>
                   </tr>
                 </thead>
@@ -672,10 +676,10 @@ export default function Landing() {
                     ["Follow-up", "Esquecido em 67% dos casos", "100% garantido"],
                     ["Férias / 13º / Encargos", "Sim", "Não"],
                   ].map(([feature, human, vs]) => (
-                    <tr key={feature} className="border-b border-[#1f1612]/50">
-                      <td className="p-4 text-gray-400 font-medium">{feature}</td>
-                      <td className="p-4 text-center text-gray-500">{human}</td>
-                      <td className="p-4 text-center border-x border-[#FFB366]/30 bg-[#FFB366]/[0.04] text-white font-medium">{vs}</td>
+                    <tr key={feature} className="border-b border-[#E6E6E1]">
+                      <td className="p-4 text-[#55555C] font-medium">{feature}</td>
+                      <td className="p-4 text-center text-[#55555C]">{human}</td>
+                      <td className="p-4 text-center border-x border-[#E63946]/30 bg-[#E63946]/[0.04] text-[#0E0E10] font-medium">{vs}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -689,14 +693,14 @@ export default function Landing() {
       <section id="conversar" className="py-16 sm:py-24 md:py-32 relative overflow-hidden">
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] rounded-full blur-[140px]"
-            style={{ background: "radial-gradient(closest-side, rgba(255,107,26,0.18), transparent)" }} />
+            style={{ background: "radial-gradient(closest-side, rgba(230,57,70,0.18), transparent)" }} />
         </div>
         <div className="max-w-3xl mx-auto px-4 sm:px-5 relative z-10">
           <Reveal>
-            <p className="text-[10px] uppercase tracking-[0.3em] text-[#FFB366] font-medium mb-3 text-center">Próximo passo</p>
-            <h2 style={{ fontFamily: "'Bebas Neue', sans-serif" }} className="text-3xl sm:text-4xl md:text-5xl tracking-tight mb-4 text-center">
+            <p className="text-[10px] uppercase tracking-[0.3em] text-[#E63946] font-medium mb-3 text-center">Próximo passo</p>
+            <h2 style={{ fontFamily: "'Space Grotesk', sans-serif" }} className="text-3xl sm:text-4xl md:text-5xl tracking-tight mb-4 text-center">
               Bora trocar uma ideia<br />
-              <span className="bg-gradient-to-r from-[#FFB366] to-[#FF6B1A] bg-clip-text text-transparent">no WhatsApp?</span>
+              <span className="bg-gradient-to-r from-[#E63946] to-[#C1121F] bg-clip-text text-transparent">no WhatsApp?</span>
             </h2>
             <p className="text-gray-400 text-sm text-center max-w-xl mx-auto mb-10">
               Sem formulário, sem ligação fria, sem pegadinha. Você escolhe por onde quer começar a conversa
@@ -715,13 +719,13 @@ export default function Landing() {
                   href={whatsappLink(opt.intent)}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group block h-full rounded-2xl border border-[#1f1612] bg-[#0f0a08]/70 p-5 hover:border-[#FFB366]/40 hover:bg-[#FFB366]/[0.03] transition-all duration-300"
+                  className="group block h-full rounded-2xl border border-[#2B2B31] bg-[#141417]/70 p-5 hover:border-[#E63946]/40 hover:bg-[#E63946]/[0.03] transition-all duration-300"
                 >
                   <div className="flex items-center justify-between mb-4">
-                    <div className="h-9 w-9 rounded-lg bg-[#FFB366]/12 flex items-center justify-center group-hover:bg-[#FFB366]/20 transition-colors">
-                      <opt.icon className="h-4 w-4 text-[#FFB366]" />
+                    <div className="h-9 w-9 rounded-lg bg-[#E63946]/12 flex items-center justify-center group-hover:bg-[#E63946]/20 transition-colors">
+                      <opt.icon className="h-4 w-4 text-[#E63946]" />
                     </div>
-                    <ArrowUpRight className="h-4 w-4 text-gray-600 group-hover:text-[#FFB366] group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-all" />
+                    <ArrowUpRight className="h-4 w-4 text-gray-600 group-hover:text-[#E63946] group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-all" />
                   </div>
                   <p className="text-sm font-semibold text-white mb-1">{opt.label}</p>
                   <p className="text-xs text-gray-500">{opt.hint}</p>
@@ -731,12 +735,12 @@ export default function Landing() {
           </div>
 
           <Reveal delay={400}>
-            <div className="rounded-2xl border border-[#FFB366]/25 bg-[#0f0a08]/80 backdrop-blur-sm p-6 sm:p-8"
-              style={{ boxShadow: "0 0 60px rgba(255,107,26,0.06)" }}>
+            <div className="rounded-2xl border border-[#E63946]/25 bg-[#141417]/80 backdrop-blur-sm p-6 sm:p-8"
+              style={{ boxShadow: "0 0 60px rgba(230,57,70,0.06)" }}>
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5 justify-between">
                 <div className="flex items-start gap-4">
-                  <div className="h-12 w-12 rounded-full bg-gradient-to-br from-[#FFB366] to-[#FF6B1A] flex items-center justify-center shrink-0">
-                    <MessageCircle className="h-5 w-5 text-[#0a0705]" />
+                  <div className="h-12 w-12 rounded-full bg-gradient-to-br from-[#E63946] to-[#C1121F] flex items-center justify-center shrink-0">
+                    <MessageCircle className="h-5 w-5 text-[#0E0E10]" />
                   </div>
                   <div>
                     <p className="text-sm font-semibold text-white mb-1">Falar direto com a equipe VS</p>
@@ -750,7 +754,7 @@ export default function Landing() {
                   href={whatsappLink("explore")}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="shrink-0 inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-gradient-to-r from-[#FFB366] to-[#FF6B1A] text-[#0a0705] text-sm font-semibold hover:shadow-[0_0_30px_rgba(255,107,26,0.45)] transition-all"
+                  className="shrink-0 inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-gradient-to-r from-[#E63946] to-[#C1121F] text-[#0E0E10] text-sm font-semibold hover:shadow-[0_0_30px_rgba(230,57,70,0.45)] transition-all"
                 >
                   <MessageCircle className="h-4 w-4" />
                   Abrir conversa
@@ -766,11 +770,11 @@ export default function Landing() {
       </section>
 
       {/* ═══ 10. FAQ ═══ */}
-      <section id="faq" className="py-16 sm:py-24 md:py-32 bg-[#0d0a08]/40">
+      <section id="faq" className="py-16 sm:py-24 md:py-32 bg-[#FAFAF8] text-[#0E0E10]">
         <div className="max-w-2xl mx-auto px-4 sm:px-5">
           <Reveal>
-            <p className="text-[10px] uppercase tracking-[0.3em] text-[#FFB366] font-medium mb-3 text-center">Perguntas frequentes</p>
-            <h2 style={{ fontFamily: "'Bebas Neue', sans-serif" }} className="text-3xl sm:text-4xl md:text-4xl tracking-tight mb-10 text-center">
+            <p className="text-[10px] uppercase tracking-[0.3em] text-[#E63946] font-medium mb-3 text-center">Perguntas frequentes</p>
+            <h2 style={{ fontFamily: "'Space Grotesk', sans-serif" }} className="text-3xl sm:text-4xl md:text-4xl tracking-tight mb-10 text-center">
               Tire suas dúvidas
             </h2>
           </Reveal>
@@ -796,12 +800,12 @@ export default function Landing() {
 
       {/* ═══ 11. CTA FINAL ═══ */}
       <section className="py-20 sm:py-28 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#FFB366]/[0.03] to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#E63946]/[0.03] to-transparent" />
         <div className="max-w-3xl mx-auto px-4 sm:px-5 relative z-10 text-center">
           <Reveal>
-            <h2 style={{ fontFamily: "'Bebas Neue', sans-serif" }} className="text-4xl sm:text-5xl md:text-6xl tracking-tight mb-4">
+            <h2 style={{ fontFamily: "'Space Grotesk', sans-serif" }} className="text-4xl sm:text-5xl md:text-6xl tracking-tight mb-4">
               Sua concorrência já vai usar.<br />
-              <span className="bg-gradient-to-r from-[#FFB366] to-[#FF6B1A] bg-clip-text text-transparent">Você vai esperar?</span>
+              <span className="bg-gradient-to-r from-[#E63946] to-[#C1121F] bg-clip-text text-transparent">Você vai esperar?</span>
             </h2>
             <p className="text-sm sm:text-base text-gray-400 mb-8 max-w-xl mx-auto">
               Manda um "oi" pra gente. Sem cartão, sem formulário, sem pressão.
@@ -821,7 +825,7 @@ export default function Landing() {
       </section>
 
       {/* ═══ FOOTER ═══ */}
-      <footer className="border-t border-[#1f1612] py-10">
+      <footer className="border-t border-[#2B2B31] py-10">
         <div className="max-w-6xl mx-auto px-4 sm:px-5">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6">
             <div className="flex items-center gap-3">
@@ -834,9 +838,9 @@ export default function Landing() {
             <div className="flex items-center gap-4 sm:gap-6 text-[10px] text-gray-600 flex-wrap justify-center">
               <a href="#" className="hover:text-gray-400 transition-colors">Privacidade</a>
               <a href="#" className="hover:text-gray-400 transition-colors">Termos</a>
-              <a href={whatsappLink("explore")} target="_blank" rel="noopener noreferrer" className="hover:text-[#FFB366] transition-colors">Contato</a>
-              <a href="/auth" className="hover:text-[#FFB366] transition-colors">Entrar</a>
-              <a href="/admin" className="hover:text-[#FFB366] transition-colors flex items-center gap-1">
+              <a href={whatsappLink("explore")} target="_blank" rel="noopener noreferrer" className="hover:text-[#E63946] transition-colors">Contato</a>
+              <a href="/auth" className="hover:text-[#E63946] transition-colors">Entrar</a>
+              <a href="/admin" className="hover:text-[#E63946] transition-colors flex items-center gap-1">
                 <Shield className="h-3 w-3" />Admin
               </a>
             </div>

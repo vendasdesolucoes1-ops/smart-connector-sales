@@ -308,8 +308,8 @@ export function OrgDetailView({ orgId, orgName, onBack }: Props) {
 
   const statusColor = (state: string) => {
     if (state === "open" || state === "connected") return "#00FF88";
-    if (state === "connecting" || state === "qrcode") return "#FFB800";
-    return "#FF4444";
+    if (state === "connecting" || state === "qrcode") return "#E63946";
+    return "#C1121F";
   };
 
   const statusLabel = (state: string) => {
@@ -326,7 +326,7 @@ export function OrgDetailView({ orgId, orgName, onBack }: Props) {
       <div className="flex items-center gap-4">
         <button
           onClick={onBack}
-          className="h-9 w-9 rounded-lg bg-[#1f1612] flex items-center justify-center text-gray-400 hover:text-white hover:bg-[#2a1f1a] transition-colors"
+          className="h-9 w-9 rounded-lg bg-[#2B2B31] flex items-center justify-center text-gray-400 hover:text-white hover:bg-[#2B2B31] transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />
         </button>
@@ -337,14 +337,14 @@ export function OrgDetailView({ orgId, orgName, onBack }: Props) {
       </div>
 
       {/* Sub-tabs */}
-      <div className="flex gap-1 bg-[#0f0a08] rounded-xl p-1 border border-[#1f1612]">
+      <div className="flex gap-1 bg-[#141417] rounded-xl p-1 border border-[#2B2B31]">
         {subTabs.map(t => (
           <button
             key={t.key}
             onClick={() => setSubTab(t.key)}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-medium transition-all ${
               subTab === t.key
-                ? "bg-[#FF6B1A]/15 text-[#FFB366]"
+                ? "bg-[#E63946]/15 text-[#E63946]"
                 : "text-gray-500 hover:text-gray-300 hover:bg-white/[0.03]"
             }`}
           >
@@ -358,22 +358,22 @@ export function OrgDetailView({ orgId, orgName, onBack }: Props) {
       {subTab === "overview" && (
         loadingStats ? (
           <div className="flex items-center justify-center h-48">
-            <Loader2 className="h-5 w-5 animate-spin text-[#FFB366]" />
+            <Loader2 className="h-5 w-5 animate-spin text-[#E63946]" />
           </div>
         ) : (
           <div className="space-y-4">
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
               {[
-                { label: "Leads", value: stats.leadsCount, icon: Users, color: "#FFB366" },
+                { label: "Leads", value: stats.leadsCount, icon: Users, color: "#E63946" },
                 { label: "Oportunidades", value: stats.opportunitiesCount, icon: TrendingUp, color: "#00FF88" },
-                { label: "Agendamentos", value: stats.appointmentsCount, icon: Clock, color: "#FFB800" },
-                { label: "Conversas IA", value: stats.conversationsCount, icon: MessageCircle, color: "#FF6B1A" },
-                { label: "Agentes IA", value: `${stats.aiEnabled}/${stats.aiConfigsCount}`, icon: Bot, color: stats.aiEnabled > 0 ? "#00FF88" : "#FF4444" },
-                { label: "WhatsApp", value: `${stats.whatsappInstances} inst.`, icon: MessageCircle, color: stats.whatsappInstances > 0 ? "#00FF88" : "#FF4444" },
-                { label: "Disparos", value: stats.broadcastsCount, icon: Radio, color: "#FFB366" },
-                { label: "Status Geral", value: stats.aiEnabled > 0 && stats.whatsappInstances > 0 ? "Ativo" : "Incompleto", icon: Activity, color: stats.aiEnabled > 0 && stats.whatsappInstances > 0 ? "#00FF88" : "#FFB800" },
+                { label: "Agendamentos", value: stats.appointmentsCount, icon: Clock, color: "#E63946" },
+                { label: "Conversas IA", value: stats.conversationsCount, icon: MessageCircle, color: "#E63946" },
+                { label: "Agentes IA", value: `${stats.aiEnabled}/${stats.aiConfigsCount}`, icon: Bot, color: stats.aiEnabled > 0 ? "#00FF88" : "#C1121F" },
+                { label: "WhatsApp", value: `${stats.whatsappInstances} inst.`, icon: MessageCircle, color: stats.whatsappInstances > 0 ? "#00FF88" : "#C1121F" },
+                { label: "Disparos", value: stats.broadcastsCount, icon: Radio, color: "#E63946" },
+                { label: "Status Geral", value: stats.aiEnabled > 0 && stats.whatsappInstances > 0 ? "Ativo" : "Incompleto", icon: Activity, color: stats.aiEnabled > 0 && stats.whatsappInstances > 0 ? "#00FF88" : "#E63946" },
               ].map(card => (
-                <div key={card.label} className="rounded-xl border border-[#1f1612] bg-[#0f0a08]/60 p-4">
+                <div key={card.label} className="rounded-xl border border-[#2B2B31] bg-[#141417]/60 p-4">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-[10px] text-gray-500 uppercase tracking-wider">{card.label}</span>
                     <card.icon className="h-3.5 w-3.5" style={{ color: card.color }} />
@@ -384,10 +384,10 @@ export function OrgDetailView({ orgId, orgName, onBack }: Props) {
             </div>
 
             {/* Owner info */}
-            <div className="rounded-xl border border-[#1f1612] bg-[#0f0a08]/60 p-4 space-y-3">
+            <div className="rounded-xl border border-[#2B2B31] bg-[#141417]/60 p-4 space-y-3">
               <p className="text-[10px] text-gray-500 uppercase tracking-wider">Dados do Proprietário</p>
               <div className="flex items-center gap-3">
-                <Mail className="h-4 w-4 text-[#FFB366]" />
+                <Mail className="h-4 w-4 text-[#E63946]" />
                 <div>
                   <p className="text-[10px] text-gray-500">E-mail de login</p>
                   <p className="text-sm text-white font-medium">{ownerEmail || "Carregando..."}</p>
@@ -397,7 +397,7 @@ export function OrgDetailView({ orgId, orgName, onBack }: Props) {
               {!showPasswordForm ? (
                 <button
                   onClick={() => setShowPasswordForm(true)}
-                  className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[#FFB800]/10 text-[#FFB800] text-[11px] font-medium hover:bg-[#FFB800]/20 transition-colors border border-[#FFB800]/20"
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[#E63946]/10 text-[#E63946] text-[11px] font-medium hover:bg-[#E63946]/20 transition-colors border border-[#E63946]/20"
                 >
                   <Eye className="h-3.5 w-3.5" /> Alterar Senha
                 </button>
@@ -408,7 +408,7 @@ export function OrgDetailView({ orgId, orgName, onBack }: Props) {
                     placeholder="Nova senha (mín. 6 caracteres)"
                     value={newPassword}
                     onChange={e => setNewPassword(e.target.value)}
-                    className="flex-1 h-9 px-3 rounded-lg bg-[#1f1612] border border-[#2a1f1a] text-sm text-white placeholder:text-gray-600 focus:outline-none focus:border-[#FFB366]/50"
+                    className="flex-1 h-9 px-3 rounded-lg bg-[#2B2B31] border border-[#2B2B31] text-sm text-white placeholder:text-gray-600 focus:outline-none focus:border-[#E63946]/50"
                   />
                   <button
                     onClick={handleChangePassword}
@@ -428,16 +428,16 @@ export function OrgDetailView({ orgId, orgName, onBack }: Props) {
             </div>
 
             {/* Quick actions */}
-            <div className="rounded-xl border border-[#1f1612] bg-[#0f0a08]/60 p-4">
+            <div className="rounded-xl border border-[#2B2B31] bg-[#141417]/60 p-4">
               <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-3">Ações rápidas</p>
               <div className="flex flex-wrap gap-2">
-                <button onClick={() => setSubTab("ai")} className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[#FF6B1A]/10 text-[#FFB366] text-[11px] font-medium hover:bg-[#FF6B1A]/20 transition-colors border border-[#FFB366]/20">
+                <button onClick={() => setSubTab("ai")} className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[#E63946]/10 text-[#E63946] text-[11px] font-medium hover:bg-[#E63946]/20 transition-colors border border-[#E63946]/20">
                   <Bot className="h-3.5 w-3.5" /> Gerenciar Agentes
                 </button>
                 <button onClick={() => setSubTab("whatsapp")} className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[#25D366]/10 text-[#25D366] text-[11px] font-medium hover:bg-[#25D366]/20 transition-colors border border-[#25D366]/20">
                   <MessageCircle className="h-3.5 w-3.5" /> Ver WhatsApp
                 </button>
-                <button onClick={() => setSubTab("broadcasts")} className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[#FFB800]/10 text-[#FFB800] text-[11px] font-medium hover:bg-[#FFB800]/20 transition-colors border border-[#FFB800]/20">
+                <button onClick={() => setSubTab("broadcasts")} className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[#E63946]/10 text-[#E63946] text-[11px] font-medium hover:bg-[#E63946]/20 transition-colors border border-[#E63946]/20">
                   <Radio className="h-3.5 w-3.5" /> Ver Disparos
                 </button>
                 <button onClick={() => setSubTab("company")} className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-white/5 text-gray-400 text-[11px] font-medium hover:bg-white/10 transition-colors border border-white/10">
@@ -453,13 +453,13 @@ export function OrgDetailView({ orgId, orgName, onBack }: Props) {
       {subTab === "ai" && (
         loadingAi ? (
           <div className="flex items-center justify-center h-48">
-            <Loader2 className="h-5 w-5 animate-spin text-[#FFB366]" />
+            <Loader2 className="h-5 w-5 animate-spin text-[#E63946]" />
           </div>
         ) : (
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <p className="text-xs text-gray-500">{aiConfigs.length} agente(s) configurado(s)</p>
-              <button onClick={loadAiConfigs} className="flex items-center gap-1 text-[10px] text-gray-500 hover:text-[#FFB366]">
+              <button onClick={loadAiConfigs} className="flex items-center gap-1 text-[10px] text-gray-500 hover:text-[#E63946]">
                 <RefreshCw className="h-3 w-3" /> Atualizar
               </button>
             </div>
@@ -475,7 +475,7 @@ export function OrgDetailView({ orgId, orgName, onBack }: Props) {
               const modular = (config.config as any)?.modular;
               const isToggling = togglingAi === config.id;
               return (
-                <div key={config.id} className="rounded-xl border border-[#1f1612] bg-[#0f0a08]/60 p-4 space-y-3">
+                <div key={config.id} className="rounded-xl border border-[#2B2B31] bg-[#141417]/60 p-4 space-y-3">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <div className={`h-9 w-9 rounded-lg flex items-center justify-center ${config.enabled ? "bg-[#00FF88]/10" : "bg-gray-800"}`}>
@@ -513,7 +513,7 @@ export function OrgDetailView({ orgId, orgName, onBack }: Props) {
 
                   {/* Prompt preview */}
                   {config.system_prompt && (
-                    <div className="bg-[#0a0705] rounded-lg p-3 border border-[#1f1612]">
+                    <div className="bg-[#0E0E10] rounded-lg p-3 border border-[#2B2B31]">
                       <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">Prompt</p>
                       <p className="text-xs text-gray-400 line-clamp-3">{config.system_prompt}</p>
                     </div>
@@ -560,7 +560,7 @@ export function OrgDetailView({ orgId, orgName, onBack }: Props) {
               const state = instanceStatuses[inst.name] || "checking";
               const color = state === "checking" ? "#666" : statusColor(state);
               return (
-                <div key={inst.name} className="rounded-xl border border-[#1f1612] bg-[#0f0a08]/60 p-4">
+                <div key={inst.name} className="rounded-xl border border-[#2B2B31] bg-[#141417]/60 p-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <div className="h-9 w-9 rounded-lg flex items-center justify-center" style={{ background: `${color}12` }}>
@@ -589,13 +589,13 @@ export function OrgDetailView({ orgId, orgName, onBack }: Props) {
       {subTab === "broadcasts" && (
         loadingBroadcasts ? (
           <div className="flex items-center justify-center h-48">
-            <Loader2 className="h-5 w-5 animate-spin text-[#FFB800]" />
+            <Loader2 className="h-5 w-5 animate-spin text-[#E63946]" />
           </div>
         ) : (
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <p className="text-xs text-gray-500">{broadcasts.length} disparo(s)</p>
-              <button onClick={loadBroadcasts} className="flex items-center gap-1 text-[10px] text-gray-500 hover:text-[#FFB800]">
+              <button onClick={loadBroadcasts} className="flex items-center gap-1 text-[10px] text-gray-500 hover:text-[#E63946]">
                 <RefreshCw className="h-3 w-3" /> Atualizar
               </button>
             </div>
@@ -609,8 +609,8 @@ export function OrgDetailView({ orgId, orgName, onBack }: Props) {
 
             {broadcasts.map(b => {
               const statusColors: Record<string, string> = {
-                draft: "#666", scheduled: "#FFB800", sending: "#FFB366",
-                completed: "#00FF88", paused: "#FFB800", failed: "#FF4444",
+                draft: "#666", scheduled: "#E63946", sending: "#E63946",
+                completed: "#00FF88", paused: "#E63946", failed: "#C1121F",
               };
               const color = statusColors[b.status] || "#666";
               const statusLabels: Record<string, string> = {
@@ -619,7 +619,7 @@ export function OrgDetailView({ orgId, orgName, onBack }: Props) {
               };
 
               return (
-                <div key={b.id} className="rounded-xl border border-[#1f1612] bg-[#0f0a08]/60 p-4 space-y-3">
+                <div key={b.id} className="rounded-xl border border-[#2B2B31] bg-[#141417]/60 p-4 space-y-3">
                   <div className="flex items-center justify-between">
                     <div>
                       <div className="flex items-center gap-2">
@@ -647,7 +647,7 @@ export function OrgDetailView({ orgId, orgName, onBack }: Props) {
                       { label: "Lidos", value: b.read_count || 0 },
                       { label: "Respondidos", value: b.replied_count || 0 },
                     ].map(m => (
-                      <div key={m.label} className="text-center bg-[#0a0705] rounded-lg p-2">
+                      <div key={m.label} className="text-center bg-[#0E0E10] rounded-lg p-2">
                         <p className="text-lg font-bold text-white">{m.value}</p>
                         <p className="text-[9px] text-gray-600">{m.label}</p>
                       </div>
@@ -664,7 +664,7 @@ export function OrgDetailView({ orgId, orgName, onBack }: Props) {
       {subTab === "company" && (
         loadingCompany ? (
           <div className="flex items-center justify-center h-48">
-            <Loader2 className="h-5 w-5 animate-spin text-[#FFB366]" />
+            <Loader2 className="h-5 w-5 animate-spin text-[#E63946]" />
           </div>
         ) : companyProfile ? (
           <div className="space-y-6">
@@ -673,7 +673,7 @@ export function OrgDetailView({ orgId, orgName, onBack }: Props) {
               <button
                 onClick={saveCompanyProfile}
                 disabled={savingCompany}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#FF6B1A] text-white text-sm font-semibold hover:bg-[#D9540F] transition-colors disabled:opacity-50"
+                className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#E63946] text-white text-sm font-semibold hover:bg-[#C1121F] transition-colors disabled:opacity-50"
               >
                 {savingCompany ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
                 Salvar Perfil
@@ -692,54 +692,54 @@ export function OrgDetailView({ orgId, orgName, onBack }: Props) {
               ];
               const completeness = Math.round((fields.filter(Boolean).length / fields.length) * 100);
               return (
-                <div className="rounded-xl border border-[#1f1612] bg-[#0f0a08]/60 p-4">
+                <div className="rounded-xl border border-[#2B2B31] bg-[#141417]/60 p-4">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs font-medium text-white flex items-center gap-2"><Sparkles className="h-3.5 w-3.5 text-[#FFB366]" /> Perfil de IA</span>
-                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#FF6B1A]/10 text-[#FFB366] border border-[#FFB366]/20">{completeness}% completo</span>
+                    <span className="text-xs font-medium text-white flex items-center gap-2"><Sparkles className="h-3.5 w-3.5 text-[#E63946]" /> Perfil de IA</span>
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#E63946]/10 text-[#E63946] border border-[#E63946]/20">{completeness}% completo</span>
                   </div>
-                  <div className="w-full h-1.5 bg-[#1f1612] rounded-full overflow-hidden">
-                    <div className="h-full bg-[#FFB366] rounded-full transition-all duration-500" style={{ width: `${completeness}%` }} />
+                  <div className="w-full h-1.5 bg-[#2B2B31] rounded-full overflow-hidden">
+                    <div className="h-full bg-[#E63946] rounded-full transition-all duration-500" style={{ width: `${completeness}%` }} />
                   </div>
                 </div>
               );
             })()}
 
             {/* Identity */}
-            <div className="rounded-xl border border-[#1f1612] bg-[#0f0a08]/60 p-5 space-y-4">
+            <div className="rounded-xl border border-[#2B2B31] bg-[#141417]/60 p-5 space-y-4">
               <h3 className="text-xs font-semibold text-white uppercase tracking-wider flex items-center gap-2">
-                <Building2 className="h-4 w-4 text-[#FFB366]" /> Identidade
+                <Building2 className="h-4 w-4 text-[#E63946]" /> Identidade
               </h3>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="text-[10px] text-gray-500 uppercase tracking-wider mb-1 block">Nome da Empresa *</label>
-                  <input value={companyProfile.company_name} onChange={e => setCompanyProfile(prev => prev ? { ...prev, company_name: e.target.value } : prev)} className="w-full h-9 px-3 rounded-lg bg-[#0a0705] border border-[#1f1612] text-sm text-white focus:outline-none focus:border-[#FFB366]/30" placeholder="Ex: VS Soluções" />
+                  <input value={companyProfile.company_name} onChange={e => setCompanyProfile(prev => prev ? { ...prev, company_name: e.target.value } : prev)} className="w-full h-9 px-3 rounded-lg bg-[#0E0E10] border border-[#2B2B31] text-sm text-white focus:outline-none focus:border-[#E63946]/30" placeholder="Ex: VS Soluções" />
                 </div>
                 <div>
                   <label className="text-[10px] text-gray-500 uppercase tracking-wider mb-1 block">Segmento</label>
-                  <input value={companyProfile.segment || ""} onChange={e => setCompanyProfile(prev => prev ? { ...prev, segment: e.target.value } : prev)} className="w-full h-9 px-3 rounded-lg bg-[#0a0705] border border-[#1f1612] text-sm text-white focus:outline-none focus:border-[#FFB366]/30" placeholder="Ex: Tecnologia B2B" />
+                  <input value={companyProfile.segment || ""} onChange={e => setCompanyProfile(prev => prev ? { ...prev, segment: e.target.value } : prev)} className="w-full h-9 px-3 rounded-lg bg-[#0E0E10] border border-[#2B2B31] text-sm text-white focus:outline-none focus:border-[#E63946]/30" placeholder="Ex: Tecnologia B2B" />
                 </div>
                 <div>
                   <label className="text-[10px] text-gray-500 uppercase tracking-wider mb-1 block">CNPJ</label>
-                  <input value={companyProfile.cnpj || ""} onChange={e => setCompanyProfile(prev => prev ? { ...prev, cnpj: e.target.value } : prev)} className="w-full h-9 px-3 rounded-lg bg-[#0a0705] border border-[#1f1612] text-sm text-white focus:outline-none focus:border-[#FFB366]/30" placeholder="00.000.000/0000-00" />
+                  <input value={companyProfile.cnpj || ""} onChange={e => setCompanyProfile(prev => prev ? { ...prev, cnpj: e.target.value } : prev)} className="w-full h-9 px-3 rounded-lg bg-[#0E0E10] border border-[#2B2B31] text-sm text-white focus:outline-none focus:border-[#E63946]/30" placeholder="00.000.000/0000-00" />
                 </div>
                 <div>
                   <label className="text-[10px] text-gray-500 uppercase tracking-wider mb-1 block">Ano de Fundação</label>
-                  <input type="number" value={companyProfile.founded_year || ""} onChange={e => setCompanyProfile(prev => prev ? { ...prev, founded_year: e.target.value ? Number(e.target.value) : null } : prev)} className="w-full h-9 px-3 rounded-lg bg-[#0a0705] border border-[#1f1612] text-sm text-white focus:outline-none focus:border-[#FFB366]/30" placeholder="2020" />
+                  <input type="number" value={companyProfile.founded_year || ""} onChange={e => setCompanyProfile(prev => prev ? { ...prev, founded_year: e.target.value ? Number(e.target.value) : null } : prev)} className="w-full h-9 px-3 rounded-lg bg-[#0E0E10] border border-[#2B2B31] text-sm text-white focus:outline-none focus:border-[#E63946]/30" placeholder="2020" />
                 </div>
               </div>
               <div>
                 <label className="text-[10px] text-gray-500 uppercase tracking-wider mb-1 block">Descrição</label>
-                <textarea rows={3} value={companyProfile.description} onChange={e => setCompanyProfile(prev => prev ? { ...prev, description: e.target.value } : prev)} className="w-full px-3 py-2 rounded-lg bg-[#0a0705] border border-[#1f1612] text-sm text-white focus:outline-none focus:border-[#FFB366]/30 resize-none" placeholder="O que a empresa faz..." />
+                <textarea rows={3} value={companyProfile.description} onChange={e => setCompanyProfile(prev => prev ? { ...prev, description: e.target.value } : prev)} className="w-full px-3 py-2 rounded-lg bg-[#0E0E10] border border-[#2B2B31] text-sm text-white focus:outline-none focus:border-[#E63946]/30 resize-none" placeholder="O que a empresa faz..." />
               </div>
             </div>
 
             {/* Products */}
-            <div className="rounded-xl border border-[#1f1612] bg-[#0f0a08]/60 p-5 space-y-4">
+            <div className="rounded-xl border border-[#2B2B31] bg-[#141417]/60 p-5 space-y-4">
               <div className="flex items-center justify-between">
                 <h3 className="text-xs font-semibold text-white uppercase tracking-wider flex items-center gap-2">
                   <Package className="h-4 w-4 text-[#00FF88]" /> Produtos & Serviços
                 </h3>
-                <button onClick={() => setCompanyProfile(prev => prev ? { ...prev, products_services: [...prev.products_services, { name: "", description: "", price: "" }] } : prev)} className="flex items-center gap-1 text-[10px] text-[#FFB366] hover:text-white transition-colors">
+                <button onClick={() => setCompanyProfile(prev => prev ? { ...prev, products_services: [...prev.products_services, { name: "", description: "", price: "" }] } : prev)} className="flex items-center gap-1 text-[10px] text-[#E63946] hover:text-white transition-colors">
                   <Plus className="h-3 w-3" /> Adicionar
                 </button>
               </div>
@@ -747,24 +747,24 @@ export function OrgDetailView({ orgId, orgName, onBack }: Props) {
                 <p className="text-xs text-gray-600 text-center py-4">Nenhum produto cadastrado.</p>
               )}
               {companyProfile.products_services.map((product, idx) => (
-                <div key={idx} className="p-3 rounded-lg border border-[#1f1612] bg-[#0a0705]/50 space-y-2">
+                <div key={idx} className="p-3 rounded-lg border border-[#2B2B31] bg-[#0E0E10]/50 space-y-2">
                   <div className="flex items-center justify-between">
                     <span className="text-[10px] text-gray-500">Produto {idx + 1}</span>
                     <button onClick={() => setCompanyProfile(prev => prev ? { ...prev, products_services: prev.products_services.filter((_, i) => i !== idx) } : prev)} className="text-gray-600 hover:text-red-400"><X className="h-3 w-3" /></button>
                   </div>
                   <div className="grid grid-cols-2 gap-2">
-                    <input value={product.name} onChange={e => { const updated = [...companyProfile.products_services]; (updated[idx] as any).name = e.target.value; setCompanyProfile(prev => prev ? { ...prev, products_services: updated } : prev); }} className="h-8 px-3 rounded-lg bg-[#0a0705] border border-[#1f1612] text-xs text-white focus:outline-none focus:border-[#FFB366]/30" placeholder="Nome" />
-                    <input value={product.price || ""} onChange={e => { const updated = [...companyProfile.products_services]; (updated[idx] as any).price = e.target.value; setCompanyProfile(prev => prev ? { ...prev, products_services: updated } : prev); }} className="h-8 px-3 rounded-lg bg-[#0a0705] border border-[#1f1612] text-xs text-white focus:outline-none focus:border-[#FFB366]/30" placeholder="Preço" />
+                    <input value={product.name} onChange={e => { const updated = [...companyProfile.products_services]; (updated[idx] as any).name = e.target.value; setCompanyProfile(prev => prev ? { ...prev, products_services: updated } : prev); }} className="h-8 px-3 rounded-lg bg-[#0E0E10] border border-[#2B2B31] text-xs text-white focus:outline-none focus:border-[#E63946]/30" placeholder="Nome" />
+                    <input value={product.price || ""} onChange={e => { const updated = [...companyProfile.products_services]; (updated[idx] as any).price = e.target.value; setCompanyProfile(prev => prev ? { ...prev, products_services: updated } : prev); }} className="h-8 px-3 rounded-lg bg-[#0E0E10] border border-[#2B2B31] text-xs text-white focus:outline-none focus:border-[#E63946]/30" placeholder="Preço" />
                   </div>
-                  <textarea rows={2} value={product.description} onChange={e => { const updated = [...companyProfile.products_services]; (updated[idx] as any).description = e.target.value; setCompanyProfile(prev => prev ? { ...prev, products_services: updated } : prev); }} className="w-full px-3 py-2 rounded-lg bg-[#0a0705] border border-[#1f1612] text-xs text-white focus:outline-none focus:border-[#FFB366]/30 resize-none" placeholder="Descrição" />
+                  <textarea rows={2} value={product.description} onChange={e => { const updated = [...companyProfile.products_services]; (updated[idx] as any).description = e.target.value; setCompanyProfile(prev => prev ? { ...prev, products_services: updated } : prev); }} className="w-full px-3 py-2 rounded-lg bg-[#0E0E10] border border-[#2B2B31] text-xs text-white focus:outline-none focus:border-[#E63946]/30 resize-none" placeholder="Descrição" />
                 </div>
               ))}
             </div>
 
             {/* Strategy */}
-            <div className="rounded-xl border border-[#1f1612] bg-[#0f0a08]/60 p-5 space-y-4">
+            <div className="rounded-xl border border-[#2B2B31] bg-[#141417]/60 p-5 space-y-4">
               <h3 className="text-xs font-semibold text-white uppercase tracking-wider flex items-center gap-2">
-                <Target className="h-4 w-4 text-[#FFB800]" /> Estratégia Comercial
+                <Target className="h-4 w-4 text-[#E63946]" /> Estratégia Comercial
               </h3>
               {[
                 { label: "Público-Alvo", field: "target_audience" as const, placeholder: "Cliente ideal, segmento, porte..." },
@@ -774,15 +774,15 @@ export function OrgDetailView({ orgId, orgName, onBack }: Props) {
               ].map(f => (
                 <div key={f.field}>
                   <label className="text-[10px] text-gray-500 uppercase tracking-wider mb-1 block">{f.label}</label>
-                  <textarea rows={2} value={(companyProfile as any)[f.field] || ""} onChange={e => setCompanyProfile(prev => prev ? { ...prev, [f.field]: e.target.value } : prev)} className="w-full px-3 py-2 rounded-lg bg-[#0a0705] border border-[#1f1612] text-sm text-white focus:outline-none focus:border-[#FFB366]/30 resize-none" placeholder={f.placeholder} />
+                  <textarea rows={2} value={(companyProfile as any)[f.field] || ""} onChange={e => setCompanyProfile(prev => prev ? { ...prev, [f.field]: e.target.value } : prev)} className="w-full px-3 py-2 rounded-lg bg-[#0E0E10] border border-[#2B2B31] text-sm text-white focus:outline-none focus:border-[#E63946]/30 resize-none" placeholder={f.placeholder} />
                 </div>
               ))}
             </div>
 
             {/* Contact */}
-            <div className="rounded-xl border border-[#1f1612] bg-[#0f0a08]/60 p-5 space-y-4">
+            <div className="rounded-xl border border-[#2B2B31] bg-[#141417]/60 p-5 space-y-4">
               <h3 className="text-xs font-semibold text-white uppercase tracking-wider flex items-center gap-2">
-                <Globe className="h-4 w-4 text-[#FF6B1A]" /> Contato & Redes
+                <Globe className="h-4 w-4 text-[#E63946]" /> Contato & Redes
               </h3>
               <div className="grid grid-cols-2 gap-4">
                 {[
@@ -795,19 +795,19 @@ export function OrgDetailView({ orgId, orgName, onBack }: Props) {
                 ].map(f => (
                   <div key={f.field}>
                     <label className="text-[10px] text-gray-500 uppercase tracking-wider mb-1 block">{f.label}</label>
-                    <input value={(companyProfile as any)[f.field] || ""} onChange={e => setCompanyProfile(prev => prev ? { ...prev, [f.field]: e.target.value } : prev)} className="w-full h-9 px-3 rounded-lg bg-[#0a0705] border border-[#1f1612] text-sm text-white focus:outline-none focus:border-[#FFB366]/30" placeholder={f.placeholder} />
+                    <input value={(companyProfile as any)[f.field] || ""} onChange={e => setCompanyProfile(prev => prev ? { ...prev, [f.field]: e.target.value } : prev)} className="w-full h-9 px-3 rounded-lg bg-[#0E0E10] border border-[#2B2B31] text-sm text-white focus:outline-none focus:border-[#E63946]/30" placeholder={f.placeholder} />
                   </div>
                 ))}
               </div>
             </div>
 
             {/* Objections */}
-            <div className="rounded-xl border border-[#1f1612] bg-[#0f0a08]/60 p-5 space-y-4">
+            <div className="rounded-xl border border-[#2B2B31] bg-[#141417]/60 p-5 space-y-4">
               <div className="flex items-center justify-between">
                 <h3 className="text-xs font-semibold text-white uppercase tracking-wider flex items-center gap-2">
-                  <HelpCircle className="h-4 w-4 text-[#FF4444]" /> Objeções & FAQ
+                  <HelpCircle className="h-4 w-4 text-[#C1121F]" /> Objeções & FAQ
                 </h3>
-                <button onClick={() => setCompanyProfile(prev => prev ? { ...prev, objections_faq: [...prev.objections_faq, { question: "", answer: "" }] } : prev)} className="flex items-center gap-1 text-[10px] text-[#FFB366] hover:text-white transition-colors">
+                <button onClick={() => setCompanyProfile(prev => prev ? { ...prev, objections_faq: [...prev.objections_faq, { question: "", answer: "" }] } : prev)} className="flex items-center gap-1 text-[10px] text-[#E63946] hover:text-white transition-colors">
                   <Plus className="h-3 w-3" /> Adicionar
                 </button>
               </div>
@@ -815,13 +815,13 @@ export function OrgDetailView({ orgId, orgName, onBack }: Props) {
                 <p className="text-xs text-gray-600 text-center py-4">Nenhuma objeção cadastrada.</p>
               )}
               {companyProfile.objections_faq.map((faq, idx) => (
-                <div key={idx} className="p-3 rounded-lg border border-[#1f1612] bg-[#0a0705]/50 space-y-2">
+                <div key={idx} className="p-3 rounded-lg border border-[#2B2B31] bg-[#0E0E10]/50 space-y-2">
                   <div className="flex items-center justify-between">
                     <span className="text-[10px] text-gray-500">Objeção {idx + 1}</span>
                     <button onClick={() => setCompanyProfile(prev => prev ? { ...prev, objections_faq: prev.objections_faq.filter((_, i) => i !== idx) } : prev)} className="text-gray-600 hover:text-red-400"><X className="h-3 w-3" /></button>
                   </div>
-                  <input value={faq.question} onChange={e => { const updated = [...companyProfile.objections_faq]; updated[idx].question = e.target.value; setCompanyProfile(prev => prev ? { ...prev, objections_faq: updated } : prev); }} className="w-full h-8 px-3 rounded-lg bg-[#0a0705] border border-[#1f1612] text-xs text-white focus:outline-none focus:border-[#FFB366]/30" placeholder="Objeção" />
-                  <textarea rows={2} value={faq.answer} onChange={e => { const updated = [...companyProfile.objections_faq]; updated[idx].answer = e.target.value; setCompanyProfile(prev => prev ? { ...prev, objections_faq: updated } : prev); }} className="w-full px-3 py-2 rounded-lg bg-[#0a0705] border border-[#1f1612] text-xs text-white focus:outline-none focus:border-[#FFB366]/30 resize-none" placeholder="Resposta" />
+                  <input value={faq.question} onChange={e => { const updated = [...companyProfile.objections_faq]; updated[idx].question = e.target.value; setCompanyProfile(prev => prev ? { ...prev, objections_faq: updated } : prev); }} className="w-full h-8 px-3 rounded-lg bg-[#0E0E10] border border-[#2B2B31] text-xs text-white focus:outline-none focus:border-[#E63946]/30" placeholder="Objeção" />
+                  <textarea rows={2} value={faq.answer} onChange={e => { const updated = [...companyProfile.objections_faq]; updated[idx].answer = e.target.value; setCompanyProfile(prev => prev ? { ...prev, objections_faq: updated } : prev); }} className="w-full px-3 py-2 rounded-lg bg-[#0E0E10] border border-[#2B2B31] text-xs text-white focus:outline-none focus:border-[#E63946]/30 resize-none" placeholder="Resposta" />
                 </div>
               ))}
             </div>

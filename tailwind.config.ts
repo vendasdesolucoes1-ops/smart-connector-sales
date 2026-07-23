@@ -15,6 +15,7 @@ export default {
     extend: {
       fontFamily: {
         sans: ["'Inter'", "system-ui", "-apple-system", "sans-serif"],
+        display: ["'Space Grotesk'", "'Inter'", "system-ui", "sans-serif"],
         mono: ["'JetBrains Mono'", "monospace"],
       },
       fontSize: {
@@ -31,7 +32,17 @@ export default {
           foreground: "hsl(var(--primary-foreground))",
           soft: "hsl(var(--primary-soft))",
           strong: "hsl(var(--primary-strong))",
+          hover: "hsl(var(--primary-strong))",
+          deep: "hsl(var(--primary-deep))",
         },
+        /* VS Soluções v2.0 — tokens nomeados */
+        "background-dark": "#0E0E10",
+        "surface-dark": "#1A1A1E",
+        "border-dark": "#2B2B31",
+        "off-white": "#FAFAF8",
+        "text-secondary": "#55555C",
+        "text-on-dark": "#A8A8B0",
+        error: "hsl(var(--destructive))",
         info: {
           DEFAULT: "hsl(var(--info))",
           foreground: "hsl(var(--info-foreground))",
@@ -41,8 +52,8 @@ export default {
           "surface-2": "hsl(var(--brand-surface-2))",
           "surface-3": "hsl(var(--brand-surface-3))",
           border: "hsl(var(--brand-border))",
-          orange: "hsl(var(--brand-orange))",
-          "orange-soft": "hsl(var(--brand-orange-soft))",
+          red: "hsl(var(--brand-red))",
+          "red-soft": "hsl(var(--brand-red-soft))",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",

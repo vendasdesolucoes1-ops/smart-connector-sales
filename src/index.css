@@ -1,129 +1,134 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@500;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 /*
- * VS Sales Design System — 2026 rebrand
- * Brand: warm orange (#FF6B1A) replacing legacy blue.
+ * VS Sales Design System — VS Soluções brand v2.0
+ * Brand: Vermelho VS (#E63946) sobre preto (#0E0E10) / off-white (#FAFAF8).
+ * Estados funcionais têm cores próprias (sucesso #1D9E75, aviso #EF9F27,
+ * erro #A32D2D) — nunca usar o vermelho da marca para erro.
  * All color tokens are HSL channels (no hsl() wrapper) so Tailwind can compose
  * them with opacity modifiers (hsl(var(--primary) / 0.5)).
  */
 
 @layer base {
   :root {
-    --background: 30 25% 99%;
-    --foreground: 20 14% 9%;
+    --background: 60 17% 98%;
+    --foreground: 240 7% 6%;
     --card: 0 0% 100%;
-    --card-foreground: 20 14% 9%;
+    --card-foreground: 240 7% 6%;
     --popover: 0 0% 100%;
-    --popover-foreground: 20 14% 9%;
+    --popover-foreground: 240 7% 6%;
 
-    --primary: 22 95% 53%;
+    --primary: 355 78% 56%;
     --primary-foreground: 0 0% 100%;
-    --primary-soft: 24 100% 96%;
-    --primary-strong: 18 92% 48%;
+    --primary-soft: 353 81% 96%;
+    --primary-strong: 356 83% 41%;
+    --primary-deep: 356 83% 30%;
 
-    --secondary: 30 14% 96%;
-    --secondary-foreground: 20 14% 9%;
-    --muted: 30 14% 96%;
-    --muted-foreground: 20 8% 44%;
-    --accent: 24 100% 95%;
-    --accent-foreground: 18 92% 38%;
+    --secondary: 240 6% 96%;
+    --secondary-foreground: 240 7% 6%;
+    --muted: 240 6% 96%;
+    --muted-foreground: 240 4% 35%;
+    --accent: 353 81% 96%;
+    --accent-foreground: 356 83% 30%;
 
-    --destructive: 0 84% 60%;
+    --destructive: 0 57% 41%;
     --destructive-foreground: 0 0% 100%;
-    --success: 142 72% 38%;
+    --success: 161 69% 37%;
     --success-foreground: 0 0% 100%;
-    --warning: 38 92% 50%;
-    --warning-foreground: 20 14% 9%;
+    --warning: 36 86% 55%;
+    --warning-foreground: 240 7% 6%;
     --info: 200 90% 48%;
     --info-foreground: 0 0% 100%;
 
-    --border: 24 12% 90%;
-    --input: 24 12% 90%;
-    --ring: 22 95% 53%;
+    --border: 240 6% 90%;
+    --input: 240 6% 90%;
+    --ring: 355 78% 56%;
     --radius: 0.625rem;
 
-    --sidebar-background: 30 20% 98%;
-    --sidebar-foreground: 20 8% 44%;
-    --sidebar-primary: 22 95% 53%;
+    /* Sidebar is always dark (Preto VS) regardless of theme */
+    --sidebar-background: 240 7% 6%;
+    --sidebar-foreground: 240 5% 67%;
+    --sidebar-primary: 355 78% 56%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 24 100% 95%;
-    --sidebar-accent-foreground: 18 92% 38%;
-    --sidebar-border: 24 12% 90%;
-    --sidebar-ring: 22 95% 53%;
+    --sidebar-accent: 240 7% 11%;
+    --sidebar-accent-foreground: 60 17% 98%;
+    --sidebar-border: 240 7% 18%;
+    --sidebar-ring: 355 78% 56%;
 
-    --chart-1: 22 95% 53%;
-    --chart-2: 142 72% 38%;
-    --chart-3: 38 92% 50%;
+    --chart-1: 355 78% 56%;
+    --chart-2: 161 69% 37%;
+    --chart-3: 36 86% 55%;
     --chart-4: 262 75% 60%;
     --chart-5: 200 90% 48%;
 
     /* Brand surfaces — used by hardcoded marketing/admin views */
-    --brand-surface: 24 18% 8%;
-    --brand-surface-2: 22 16% 11%;
-    --brand-surface-3: 22 14% 14%;
-    --brand-border: 22 14% 18%;
-    --brand-orange: 22 100% 56%;
-    --brand-orange-soft: 28 100% 65%;
+    --brand-surface: 240 7% 6%;
+    --brand-surface-2: 240 7% 11%;
+    --brand-surface-3: 240 7% 14%;
+    --brand-border: 240 7% 18%;
+    --brand-red: 355 78% 56%;
+    --brand-red-soft: 355 80% 66%;
   }
 
   .dark {
-    --background: 24 14% 6%;
-    --foreground: 30 15% 94%;
-    --card: 24 14% 9%;
-    --card-foreground: 30 15% 94%;
-    --popover: 24 16% 8%;
-    --popover-foreground: 30 15% 94%;
+    --background: 240 7% 6%;
+    --foreground: 60 17% 98%;
+    --card: 240 7% 11%;
+    --card-foreground: 60 17% 98%;
+    --popover: 240 7% 9%;
+    --popover-foreground: 60 17% 98%;
 
-    --primary: 22 100% 58%;
-    --primary-foreground: 20 14% 6%;
-    --primary-soft: 22 60% 14%;
-    --primary-strong: 18 95% 52%;
+    --primary: 355 78% 58%;
+    --primary-foreground: 0 0% 100%;
+    --primary-soft: 356 50% 14%;
+    --primary-strong: 356 83% 45%;
+    --primary-deep: 356 83% 30%;
 
-    --secondary: 24 10% 13%;
-    --secondary-foreground: 30 12% 88%;
-    --muted: 24 10% 13%;
-    --muted-foreground: 25 8% 58%;
-    --accent: 22 40% 16%;
-    --accent-foreground: 24 100% 78%;
+    --secondary: 240 7% 13%;
+    --secondary-foreground: 240 5% 88%;
+    --muted: 240 7% 13%;
+    --muted-foreground: 240 5% 67%;
+    --accent: 356 40% 16%;
+    --accent-foreground: 355 80% 78%;
 
-    --destructive: 0 72% 55%;
+    --destructive: 0 57% 48%;
     --destructive-foreground: 0 0% 100%;
-    --success: 142 65% 45%;
+    --success: 161 60% 42%;
     --success-foreground: 0 0% 100%;
-    --warning: 38 90% 55%;
-    --warning-foreground: 24 14% 6%;
+    --warning: 36 86% 55%;
+    --warning-foreground: 240 7% 6%;
     --info: 200 85% 55%;
     --info-foreground: 0 0% 100%;
 
-    --border: 24 10% 16%;
-    --input: 24 10% 16%;
-    --ring: 22 100% 58%;
+    --border: 240 7% 18%;
+    --input: 240 7% 18%;
+    --ring: 355 78% 58%;
 
-    --sidebar-background: 24 18% 5%;
-    --sidebar-foreground: 25 8% 58%;
-    --sidebar-primary: 22 100% 58%;
-    --sidebar-primary-foreground: 24 14% 6%;
-    --sidebar-accent: 24 12% 11%;
-    --sidebar-accent-foreground: 24 100% 78%;
-    --sidebar-border: 24 10% 13%;
-    --sidebar-ring: 22 100% 58%;
+    --sidebar-background: 240 7% 5%;
+    --sidebar-foreground: 240 5% 67%;
+    --sidebar-primary: 355 78% 58%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 7% 11%;
+    --sidebar-accent-foreground: 60 17% 98%;
+    --sidebar-border: 240 7% 13%;
+    --sidebar-ring: 355 78% 58%;
 
-    --chart-1: 22 100% 58%;
-    --chart-2: 142 65% 45%;
-    --chart-3: 38 90% 55%;
+    --chart-1: 355 78% 58%;
+    --chart-2: 161 60% 42%;
+    --chart-3: 36 86% 55%;
     --chart-4: 262 75% 65%;
     --chart-5: 200 85% 55%;
 
-    --brand-surface: 24 18% 5%;
-    --brand-surface-2: 22 16% 8%;
-    --brand-surface-3: 22 14% 12%;
-    --brand-border: 22 14% 16%;
-    --brand-orange: 22 100% 58%;
-    --brand-orange-soft: 28 100% 68%;
+    --brand-surface: 240 7% 5%;
+    --brand-surface-2: 240 7% 8%;
+    --brand-surface-3: 240 7% 12%;
+    --brand-border: 240 7% 16%;
+    --brand-red: 355 78% 58%;
+    --brand-red-soft: 355 80% 68%;
   }
 
   html {
@@ -141,9 +146,12 @@
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11', 'ss01';
     letter-spacing: -0.011em;
+    line-height: 1.6;
   }
 
   h1, h2, h3, h4, h5, h6 {
+    font-family: 'Space Grotesk', 'Inter', system-ui, sans-serif;
+    font-weight: 700;
     letter-spacing: -0.02em;
   }
 
@@ -165,31 +173,33 @@
   font-family: 'JetBrains Mono', monospace;
 }
 
+.font-display {
+  font-family: 'Space Grotesk', 'Inter', system-ui, sans-serif;
+}
+
 @layer utilities {
   .text-gradient {
     @apply bg-clip-text text-transparent;
-    background-image: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--brand-orange-soft)));
+    background-image: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--brand-red-soft)));
   }
 
   .text-gradient-warm {
     @apply bg-clip-text text-transparent;
-    background-image: linear-gradient(135deg, hsl(14 95% 58%), hsl(38 95% 58%));
+    background-image: linear-gradient(135deg, hsl(355 78% 56%), hsl(355 80% 68%));
   }
 
   .gradient-primary {
-    background-image: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(14 92% 55%) 100%);
+    background-image: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary-strong)) 100%);
   }
 
   .gradient-surface {
-    background-image: radial-gradient(circle at 20% 0%, hsl(var(--primary) / 0.12), transparent 55%),
-                      radial-gradient(circle at 80% 100%, hsl(14 90% 55% / 0.08), transparent 50%),
+    background-image: radial-gradient(circle at 20% 0%, hsl(var(--primary) / 0.08), transparent 55%),
                       hsl(var(--background));
   }
 
   .gradient-brand-dark {
     background-image:
-      radial-gradient(ellipse at top, hsl(var(--primary) / 0.18), transparent 60%),
-      radial-gradient(ellipse at bottom right, hsl(14 90% 50% / 0.12), transparent 55%),
+      radial-gradient(ellipse at top, hsl(var(--primary) / 0.12), transparent 60%),
       hsl(var(--brand-surface));
   }
 
@@ -197,14 +207,22 @@
     box-shadow: 0 0 0 1px hsl(var(--primary) / 0.4), 0 0 24px -4px hsl(var(--primary) / 0.35);
   }
 
-  .shadow-glow { box-shadow: 0 0 24px -6px hsl(var(--primary) / 0.35); }
-  .shadow-glow-lg { box-shadow: 0 0 48px -10px hsl(var(--primary) / 0.45); }
+  .shadow-glow { box-shadow: 0 0 24px -6px hsl(var(--primary) / 0.3); }
+  .shadow-glow-lg { box-shadow: 0 0 48px -10px hsl(var(--primary) / 0.4); }
 
   .bg-grid {
     background-image:
       linear-gradient(to right, hsl(var(--border) / 0.6) 1px, transparent 1px),
       linear-gradient(to bottom, hsl(var(--border) / 0.6) 1px, transparent 1px);
     background-size: 32px 32px;
+  }
+
+  /* Micro-labels (12px): caixa alta, tracking +14% */
+  .micro-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-weight: 500;
   }
 }
 
@@ -250,10 +268,11 @@
     @apply inline-flex items-center gap-1.5 rounded-full border border-border bg-secondary/60 px-2.5 py-1 text-xs font-medium text-foreground/80;
   }
 
+  /* Badge/chip da marca: tint #FDECEE com texto Vermelho 900 (#8A0D16) */
   .pill-primary {
     @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium;
-    background: hsl(var(--primary) / 0.12);
-    color: hsl(var(--primary));
+    background: hsl(var(--primary-soft));
+    color: hsl(var(--primary-deep));
     border: 1px solid hsl(var(--primary) / 0.25);
   }
 }
