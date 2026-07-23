@@ -14,7 +14,7 @@ interface LogoProps {
 
 /**
  * VS Sales logo. The brand mark is "VS" — `V` adapts to surface (dark on light,
- * white on dark), `S` is always brand orange. Two PNG variants live in
+ * white on dark), `S` is always brand red (VS Soluções v2.0). Two PNG variants live in
  * src/assets and are picked by theme. Pass `variant` to force one.
  */
 export function Logo({
@@ -42,7 +42,7 @@ export function Logo({
       {showWordmark && (
         <span
           className={`text-base font-semibold tracking-[0.18em] ${wordmarkClassName}`}
-          style={{ fontFamily: "'Bebas Neue', 'Inter', sans-serif" }}
+          style={{ fontFamily: "'Space Grotesk', 'Inter', sans-serif" }}
         >
           SALES
         </span>

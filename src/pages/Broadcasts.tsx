@@ -1199,7 +1199,7 @@ const ERROR_CATEGORIES: Record<string, { label: string; description: string; ico
     label: "Sem WhatsApp",
     description: "O número não possui conta no WhatsApp ativa. Verifique se o número está correto ou se o contato desativou a conta.",
     icon: "📵",
-    color: "text-orange-600 bg-orange-500/10",
+    color: "text-warning bg-warning/10",
   },
   "Lead sem telefone": {
     label: "Sem Telefone",

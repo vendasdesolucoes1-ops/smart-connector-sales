@@ -62,7 +62,7 @@ const COMM_STAGES = [
   },
   {
     key: "scheduled", name: "Agendamento", icon: Calendar,
-    gradient: "from-amber-500 to-orange-600",
+    gradient: "from-[#E63946] to-[#C1121F]",
     dotColor: "bg-amber-400",
     bgAccent: "bg-amber-500/10",
     borderAccent: "border-l-amber-500",
@@ -112,7 +112,7 @@ function getAvatarColor(name: string | null | undefined): string {
   if (!name) return "from-slate-400 to-slate-500";
   const colors = [
     "from-sky-400 to-sky-600", "from-violet-400 to-purple-600",
-    "from-emerald-400 to-green-600", "from-amber-400 to-orange-600",
+    "from-emerald-400 to-green-600", "from-[#E63946] to-[#C1121F]",
     "from-rose-400 to-red-600", "from-cyan-400 to-teal-600",
   ];
   const idx = name.split("").reduce((acc, c) => acc + c.charCodeAt(0), 0) % colors.length;

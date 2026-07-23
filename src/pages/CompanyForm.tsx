@@ -112,7 +112,7 @@ export default function CompanyForm() {
 
   if (invalidToken) {
     return (
-      <div className="min-h-screen bg-[#0a0705] flex items-center justify-center p-4">
+      <div className="min-h-screen bg-[#0E0E10] flex items-center justify-center p-4">
         <div className="text-center">
           <X className="h-12 w-12 text-red-400 mx-auto mb-4" />
           <h1 className="text-xl font-bold text-white mb-2">Link inválido</h1>
@@ -124,7 +124,7 @@ export default function CompanyForm() {
 
   if (submitted) {
     return (
-      <div className="min-h-screen bg-[#0a0705] flex items-center justify-center p-4">
+      <div className="min-h-screen bg-[#0E0E10] flex items-center justify-center p-4">
         <div className="text-center max-w-md">
           <div className="h-16 w-16 rounded-2xl bg-[#00FF88]/10 flex items-center justify-center mx-auto mb-6">
             <CheckCircle2 className="h-8 w-8 text-[#00FF88]" />
@@ -143,21 +143,21 @@ export default function CompanyForm() {
   }
 
   const steps = [
-    { title: "Identidade", icon: Building2, color: "#FFB366" },
+    { title: "Identidade", icon: Building2, color: "#E63946" },
     { title: "Produtos", icon: Package, color: "#00FF88" },
-    { title: "Estratégia", icon: Target, color: "#FFB800" },
-    { title: "Objeções", icon: HelpCircle, color: "#FF4444" },
-    { title: "Contato", icon: Globe, color: "#FF6B1A" },
+    { title: "Estratégia", icon: Target, color: "#E63946" },
+    { title: "Objeções", icon: HelpCircle, color: "#C1121F" },
+    { title: "Contato", icon: Globe, color: "#E63946" },
   ];
 
-  const inputClass = "w-full h-10 px-4 rounded-xl bg-[#0a0705] border border-[#1f1612] text-sm text-white placeholder:text-gray-600 focus:outline-none focus:border-[#FFB366]/40 transition-colors";
-  const textareaClass = "w-full px-4 py-3 rounded-xl bg-[#0a0705] border border-[#1f1612] text-sm text-white placeholder:text-gray-600 focus:outline-none focus:border-[#FFB366]/40 resize-none transition-colors";
+  const inputClass = "w-full h-10 px-4 rounded-xl bg-[#0E0E10] border border-[#2B2B31] text-sm text-white placeholder:text-gray-600 focus:outline-none focus:border-[#E63946]/40 transition-colors";
+  const textareaClass = "w-full px-4 py-3 rounded-xl bg-[#0E0E10] border border-[#2B2B31] text-sm text-white placeholder:text-gray-600 focus:outline-none focus:border-[#E63946]/40 resize-none transition-colors";
   const labelClass = "text-[11px] text-gray-400 uppercase tracking-wider mb-1.5 block font-medium";
 
   return (
-    <div className="min-h-screen bg-[#0a0705] text-white">
+    <div className="min-h-screen bg-[#0E0E10] text-white">
       {/* Header */}
-      <div className="border-b border-[#1f1612] bg-[#0a0705]/80 backdrop-blur-sm sticky top-0 z-10">
+      <div className="border-b border-[#2B2B31] bg-[#0E0E10]/80 backdrop-blur-sm sticky top-0 z-10">
         <div className="max-w-2xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <img src={kayronLogo} alt="Kayron Agency" className="h-7" />
@@ -167,8 +167,8 @@ export default function CompanyForm() {
             </div>
           </div>
           <div className="flex items-center gap-1.5">
-            <Sparkles className="h-3.5 w-3.5 text-[#FFB366]" />
-            <span className="text-[10px] text-[#FFB366]">IA aprimorará suas respostas</span>
+            <Sparkles className="h-3.5 w-3.5 text-[#E63946]" />
+            <span className="text-[10px] text-[#E63946]">IA aprimorará suas respostas</span>
           </div>
         </div>
       </div>
@@ -184,7 +184,7 @@ export default function CompanyForm() {
             >
               <div
                 className="h-1 rounded-full transition-all duration-300"
-                style={{ background: i <= step ? s.color : "#1f1612" }}
+                style={{ background: i <= step ? s.color : "#2B2B31" }}
               />
               <div className="flex items-center gap-1 mt-2 justify-center">
                 <s.icon className="h-3 w-3" style={{ color: i <= step ? s.color : "#333" }} />
@@ -272,7 +272,7 @@ export default function CompanyForm() {
               </button>
             </div>
             {form.products_services.map((p, i) => (
-              <div key={i} className="p-4 rounded-xl border border-[#1f1612] bg-[#0a0705]/50 space-y-3">
+              <div key={i} className="p-4 rounded-xl border border-[#2B2B31] bg-[#0E0E10]/50 space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] text-gray-500 font-medium">Produto/Serviço {i + 1}</span>
                   {form.products_services.length > 1 && (
@@ -321,12 +321,12 @@ export default function CompanyForm() {
                 <h2 className="text-lg font-bold mb-1">Objeções & Perguntas Frequentes</h2>
                 <p className="text-xs text-gray-500">O que os clientes costumam perguntar ou questionar?</p>
               </div>
-              <button onClick={addFaq} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#FF4444]/10 text-[#FF4444] text-xs hover:bg-[#FF4444]/20 transition-colors border border-[#FF4444]/20">
+              <button onClick={addFaq} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#C1121F]/10 text-[#C1121F] text-xs hover:bg-[#C1121F]/20 transition-colors border border-[#C1121F]/20">
                 <Plus className="h-3 w-3" /> Adicionar
               </button>
             </div>
             {form.objections_faq.map((f, i) => (
-              <div key={i} className="p-4 rounded-xl border border-[#1f1612] bg-[#0a0705]/50 space-y-3">
+              <div key={i} className="p-4 rounded-xl border border-[#2B2B31] bg-[#0E0E10]/50 space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] text-gray-500 font-medium">Objeção/Pergunta {i + 1}</span>
                   {form.objections_faq.length > 1 && (
@@ -379,7 +379,7 @@ export default function CompanyForm() {
         )}
 
         {/* Navigation */}
-        <div className="flex items-center justify-between mt-8 pt-6 border-t border-[#1f1612]">
+        <div className="flex items-center justify-between mt-8 pt-6 border-t border-[#2B2B31]">
           <button
             onClick={() => setStep(Math.max(0, step - 1))}
             disabled={step === 0}
@@ -391,7 +391,7 @@ export default function CompanyForm() {
           {step < steps.length - 1 ? (
             <button
               onClick={() => setStep(step + 1)}
-              className="px-6 py-2.5 rounded-xl bg-[#FF6B1A] text-white text-sm font-medium hover:bg-[#FF6B1A]/80 transition-colors"
+              className="px-6 py-2.5 rounded-xl bg-[#E63946] text-white text-sm font-medium hover:bg-[#E63946]/80 transition-colors"
             >
               Próximo →
             </button>
@@ -399,7 +399,7 @@ export default function CompanyForm() {
             <button
               onClick={handleSubmit}
               disabled={submitting}
-              className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#00FF88] to-[#FFB366] text-[#0a0705] text-sm font-bold hover:opacity-90 transition-opacity disabled:opacity-50"
+              className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#00FF88] to-[#E63946] text-[#0E0E10] text-sm font-bold hover:opacity-90 transition-opacity disabled:opacity-50"
             >
               {submitting ? (
                 <>
@@ -418,7 +418,7 @@ export default function CompanyForm() {
       </div>
 
       {/* Footer */}
-      <div className="max-w-2xl mx-auto px-4 py-6 mt-4 border-t border-[#1f1612]">
+      <div className="max-w-2xl mx-auto px-4 py-6 mt-4 border-t border-[#2B2B31]">
         <div className="flex flex-col items-center gap-3">
           <div className="flex items-center gap-3">
             <img src={kayronLogo} alt="Kayron Agency" className="h-5 opacity-60" />
