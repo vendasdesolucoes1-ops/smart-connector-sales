@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { lovable } from "@/integrations/lovable";
 import { Logo } from "@/components/Logo";
 import { useToast } from "@/hooks/use-toast";
 import { Mail, Lock, Eye, EyeOff, ArrowRight, Zap, ShieldAlert } from "lucide-react";
@@ -39,15 +40,16 @@ export default function Auth() {
   const handleGoogleLogin = async () => {
     setGoogleLoading(true);
     try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: "google",
-        options: { redirectTo: window.location.origin + "/auth/callback" },
+      const result = await lovable.auth.signInWithOAuth("google", {
+        redirect_uri: window.location.origin + "/auth/callback",
       });
-      if (error) throw error;
-      // Browser will redirect to Google — keep the spinner on.
+      if (result.error) throw result.error;
+      if (result.redirected) return;
+      navigate("/");
     } catch (error: any) {
-      setGoogleLoading(false);
       toast({ title: "Erro ao entrar com Google", description: error.message, variant: "destructive" });
+    } finally {
+      setGoogleLoading(false);
     }
   };
 
