@@ -333,9 +333,11 @@ export default function CRM() {
     if (!result.destination) return;
     const { draggableId, destination } = result;
     const newStageId = destination.droppableId;
-    setOpportunities((prev) => prev.map((o) => (o.id === draggableId ? { ...o, stage_id: newStageId } : o)));
     const { error } = await supabase.from("opportunities").update({ stage_id: newStageId }).eq("id", draggableId);
-    if (error) { toast({ title: "Erro ao mover", description: error.message, variant: "destructive" }); refetchCRM(); }
+    if (error) {
+      toast({ title: "Erro ao mover", description: error.message, variant: "destructive" });
+    }
+    refetchCRM();
   };
 
   const formatCurrency = (value: number) =>
