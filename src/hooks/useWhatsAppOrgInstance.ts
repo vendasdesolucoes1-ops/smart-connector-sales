@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { logActivity } from "@/lib/activityLogger";
 
-export type WhatsAppConnectionState = "idle" | "connecting" | "waiting_qr" | "connected" | "error";
+export type WhatsAppConnectionState = "idle" | "connecting" | "waiting_qr" | "connected" | "unconfigured" | "error";
 
 export function useWhatsAppOrgInstance() {
   const { profile } = useAuth();
@@ -29,13 +29,23 @@ export function useWhatsAppOrgInstance() {
   const checkStatus = useCallback(async () => {
     try {
       const data = await invoke("get_status");
+      if (data.configured === false || data.state === "unconfigured") {
+        setState("unconfigured");
+        setError("A integração com WhatsApp ainda não foi configurada pelo administrador da plataforma.");
+        return false;
+      }
       if (data.state === "open") {
         setState("connected");
         setPhoneNumber(data.phone_number || null);
         return true;
       }
+      setState("idle");
+      setError(null);
       return false;
-    } catch {
+    } catch (statusError) {
+      console.error("Falha ao consultar o status do WhatsApp:", statusError);
+      setState("error");
+      setError("Não foi possível consultar o status do WhatsApp. Tente novamente.");
       return false;
     }
   }, [invoke]);
@@ -100,5 +110,5 @@ export function useWhatsAppOrgInstance() {
     }
   }, [invoke, stopPolling, toast]);
 
-  return { state, qrCode, phoneNumber, error, connectWhatsApp, disconnectWhatsApp };
+  return { state, qrCode, phoneNumber, error, connectWhatsApp, disconnectWhatsApp, checkStatus };
 }

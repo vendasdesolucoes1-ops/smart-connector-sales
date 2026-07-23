@@ -35,13 +35,6 @@ Deno.serve(async (req) => {
     const apiKey = settingsMap.evolution_api_key || "";
     const WEBHOOK_SECRET = Deno.env.get("EVOLUTION_WEBHOOK_SECRET") || "";
 
-    if (!baseUrl || !apiKey) {
-      return json({ error: "Evolution API não configurada em platform_settings. Configure em /super-admin/settings." }, 500);
-    }
-    if (!WEBHOOK_SECRET) {
-      return json({ error: "EVOLUTION_WEBHOOK_SECRET não configurado no sistema." }, 500);
-    }
-
     // ai-whatsapp-hook validates this secret as a query param (Evolution's
     // webhook config has no reliable way to attach custom headers).
     const buildWebhookUrl = () => `${SUPABASE_URL}/functions/v1/ai-whatsapp-hook?secret=${encodeURIComponent(WEBHOOK_SECRET)}`;
@@ -83,6 +76,26 @@ Deno.serve(async (req) => {
     const { action, org_id, instance_name } = body;
 
     if (!org_id) return json({ error: "org_id is required" }, 400);
+
+    // Missing provider credentials are an expected platform state, not an
+    // internal server failure. Read-only startup checks must remain successful
+    // so the client can render setup guidance instead of a runtime error.
+    if (!baseUrl || !apiKey) {
+      if (action === "get_status") {
+        return json({ configured: false, state: "unconfigured", phone_number: null });
+      }
+      if (action === "list") {
+        return json({ configured: false, instances: [] });
+      }
+      return json({
+        configured: false,
+        code: "EVOLUTION_NOT_CONFIGURED",
+        error: "A integração com WhatsApp ainda não foi configurada pelo administrador da plataforma.",
+      }, 503);
+    }
+    if (!WEBHOOK_SECRET) {
+      return json({ error: "A configuração segura do webhook do WhatsApp está indisponível." }, 500);
+    }
 
     // One instance per org, deterministic name — no longer user-supplied.
     const orgInstanceName = `org_${String(org_id).replace(/-/g, "")}`;
@@ -220,7 +233,7 @@ Deno.serve(async (req) => {
         .update({ status: state, ...(phoneNumber ? { phone_number: phoneNumber } : {}) })
         .eq("instance_name", orgInstanceName);
 
-      return json({ state, phone_number: phoneNumber });
+      return json({ configured: true, state, phone_number: phoneNumber });
     }
 
     // ============================================
