@@ -1,5 +1,6 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { getCorsHeaders } from "../_shared/cors.ts";
+import { decrypt } from "../_shared/crypto.ts";
 
 Deno.serve(async (req) => {
   const corsHeaders = getCorsHeaders(req);
@@ -18,22 +19,91 @@ Deno.serve(async (req) => {
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabaseAdmin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
-    // Global Evolution API credentials — configured by super admins via
-    // /super-admin/settings, stored in platform_settings (not Supabase secrets).
-    const { data: settingsRows, error: settingsErr } = await supabaseAdmin
-      .from("platform_settings")
-      .select("key, value")
-      .in("key", ["evolution_api_url", "evolution_api_key"]);
+    const WEBHOOK_SECRET = Deno.env.get("EVOLUTION_WEBHOOK_SECRET") || "";
 
-    if (settingsErr) {
-      console.error("Failed to load platform_settings:", settingsErr);
-      return json({ error: "Erro ao carregar configurações da plataforma." }, 500);
+    // Auth
+    const authHeader = req.headers.get("authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      return json({ error: "Unauthorized" }, 401);
     }
 
-    const settingsMap = Object.fromEntries((settingsRows || []).map((r) => [r.key, r.value]));
-    const baseUrl = (settingsMap.evolution_api_url || "").replace(/\/$/, "");
-    const apiKey = settingsMap.evolution_api_key || "";
-    const WEBHOOK_SECRET = Deno.env.get("EVOLUTION_WEBHOOK_SECRET") || "";
+    const supabaseUser = createClient(SUPABASE_URL, Deno.env.get("SUPABASE_ANON_KEY")!, {
+      global: { headers: { Authorization: authHeader } },
+    });
+    const { data: { user }, error: authError } = await supabaseUser.auth.getUser();
+    if (authError || !user) return json({ error: "Unauthorized" }, 401);
+
+    const userId = user.id;
+    const body = await req.json();
+    const { action, org_id, instance_name } = body;
+
+    if (!org_id) return json({ error: "org_id is required" }, 400);
+
+    const { data: profile, error: profileError } = await supabaseAdmin
+      .from("profiles")
+      .select("org_id")
+      .eq("user_id", userId)
+      .maybeSingle();
+
+    if (profileError || !profile || profile.org_id !== org_id) {
+      return json({ error: "Você não pertence a esta organização." }, 403);
+    }
+
+    // Prefer the Evolution credentials explicitly saved for this organization.
+    // The integrations screen encrypts api_key with ENCRYPTION_KEY, so using the
+    // value directly as an HTTP header makes Evolution answer 401.
+    let { data: integration, error: integrationError } = await supabaseAdmin
+      .from("integrations")
+      .select("id, config, api_key, endpoint_url")
+      .eq("org_id", org_id)
+      .eq("service_name", "evolution")
+      .maybeSingle();
+
+    if (integrationError) {
+      console.error("Failed to load organization integration:", integrationError);
+      return json({ error: "Erro ao carregar a integração da organização." }, 500);
+    }
+
+    let baseUrl = "";
+    let apiKey = "";
+    const encryptedOrgKey = integration?.api_key || "";
+
+    if (integration?.endpoint_url && encryptedOrgKey && encryptedOrgKey !== "global") {
+      baseUrl = integration.endpoint_url.trim().replace(/\/+$/, "");
+      if (encryptedOrgKey.includes(":")) {
+        const encryptionKey = Deno.env.get("ENCRYPTION_KEY");
+        if (!encryptionKey) {
+          return json({ error: "A configuração segura da integração está indisponível." }, 500);
+        }
+        try {
+          apiKey = (await decrypt(encryptedOrgKey, encryptionKey)).trim();
+        } catch (decryptError) {
+          console.error("Failed to decrypt organization Evolution key:", decryptError);
+          return json({ error: "Não foi possível ler a credencial da integração. Salve a chave novamente." }, 500);
+        }
+      } else {
+        // Backward compatibility for integrations saved before encryption.
+        apiKey = encryptedOrgKey.trim();
+      }
+    }
+
+    // Organizations without their own credentials continue using the global
+    // platform configuration maintained by super admins.
+    if (!baseUrl || !apiKey) {
+      const { data: settingsRows, error: settingsErr } = await supabaseAdmin
+        .from("platform_settings")
+        .select("key, value")
+        .in("key", ["evolution_api_url", "evolution_api_key"]);
+
+      if (settingsErr) {
+        console.error("Failed to load platform_settings:", settingsErr);
+        return json({ error: "Erro ao carregar configurações da plataforma." }, 500);
+      }
+
+      const settingsMap = Object.fromEntries((settingsRows || []).map((row) => [row.key, row.value]));
+      baseUrl = (settingsMap.evolution_api_url || "").trim().replace(/\/+$/, "");
+      apiKey = (settingsMap.evolution_api_key || "").trim();
+    }
 
     // ai-whatsapp-hook validates this secret as a query param (Evolution's
     // webhook config has no reliable way to attach custom headers).
@@ -58,24 +128,6 @@ Deno.serve(async (req) => {
         throw new Error(`${response.status} - ${errText}`);
       }
     };
-
-    // Auth
-    const authHeader = req.headers.get("authorization");
-    if (!authHeader?.startsWith("Bearer ")) {
-      return json({ error: "Unauthorized" }, 401);
-    }
-
-    const supabaseUser = createClient(SUPABASE_URL, Deno.env.get("SUPABASE_ANON_KEY")!, {
-      global: { headers: { Authorization: authHeader } },
-    });
-    const { data: { user }, error: authError } = await supabaseUser.auth.getUser();
-    if (authError || !user) return json({ error: "Unauthorized" }, 401);
-
-    const userId = user.id;
-    const body = await req.json();
-    const { action, org_id, instance_name } = body;
-
-    if (!org_id) return json({ error: "org_id is required" }, 400);
 
     // Missing provider credentials are an expected platform state, not an
     // internal server failure. Read-only startup checks must remain successful
@@ -108,13 +160,6 @@ Deno.serve(async (req) => {
     // so we'll store in a global config keyed by org_id in integrations table.
     
     // Get or create the integration record for this org (auto-provision)
-    let { data: integration } = await supabaseAdmin
-      .from("integrations")
-      .select("id, config")
-      .eq("org_id", org_id)
-      .eq("service_name", "evolution")
-      .maybeSingle();
-
     if (!integration) {
       // Auto-create integration record for this org
       const { data: newInt, error: insertErr } = await supabaseAdmin
@@ -127,7 +172,7 @@ Deno.serve(async (req) => {
           status: "active",
           config: { instances_by_user: {} },
         })
-        .select("id, config")
+        .select("id, config, api_key, endpoint_url")
         .single();
       if (insertErr) {
         console.error("Failed to auto-create integration:", insertErr);
