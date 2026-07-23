@@ -20,8 +20,8 @@ export function InvitationGate({ children }: { children: React.ReactNode }) {
           <div>
             <h1 className="text-xl font-bold tracking-tight">Acesso restrito</h1>
             <p className="text-sm text-muted-foreground mt-2">
-              O VS Sales é por convite. Sua conta ainda não tem um convite válido vinculado.
-              Solicite um convite a um administrador.
+              Seu email não tem um convite ativo. Entre em contato com a VS Soluções
+              para solicitar acesso.
             </p>
           </div>
           <Button onClick={signOut} variant="outline" className="rounded-xl w-full">
