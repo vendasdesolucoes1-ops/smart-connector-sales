@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { AppLayout } from "@/components/AppLayout";
 import Auth from "./pages/Auth";
+import AuthCallback from "./pages/AuthCallback";
 import Index from "./pages/Index";
 import Prospecting from "./pages/Prospecting";
 import Broadcasts from "./pages/Broadcasts";
@@ -53,6 +54,7 @@ function AppRoutes() {
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/admin" element={<AdminAuth />} />
         <Route path="/auth" element={<Auth />} />
+        <Route path="/auth/callback" element={<AuthCallback />} />
         <Route path="/invite/:token" element={<InviteAccept />} />
         <Route path="/forms/:token" element={<CompanyForm />} />
         <Route path="*" element={<Navigate to="/auth" replace />} />
@@ -96,6 +98,7 @@ function AppRoutes() {
         <Route path="/admin/panel" element={<AdminPanel />} />
         <Route path="/invite/:token" element={<InviteAccept />} />
         <Route path="/forms/:token" element={<CompanyForm />} />
+        <Route path="/auth/callback" element={<AuthCallback />} />
         <Route path="/auth" element={<Navigate to="/" replace />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
