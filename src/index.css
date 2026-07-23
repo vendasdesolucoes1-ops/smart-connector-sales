@@ -49,14 +49,14 @@
     --ring: 355 78% 56%;
     --radius: 0.625rem;
 
-    /* Sidebar is always dark (Preto VS) regardless of theme */
-    --sidebar-background: 240 7% 6%;
-    --sidebar-foreground: 240 5% 67%;
+    /* Sidebar segue o tema (claro no light, escuro no dark) */
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 240 4% 35%;
     --sidebar-primary: 355 78% 56%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 7% 11%;
-    --sidebar-accent-foreground: 60 17% 98%;
-    --sidebar-border: 240 7% 18%;
+    --sidebar-accent: 240 6% 96%;
+    --sidebar-accent-foreground: 240 7% 6%;
+    --sidebar-border: 240 6% 90%;
     --sidebar-ring: 355 78% 56%;
 
     --chart-1: 355 78% 56%;
