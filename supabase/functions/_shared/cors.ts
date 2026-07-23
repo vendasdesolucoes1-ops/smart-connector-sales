@@ -7,6 +7,16 @@ function buildAllowedOrigins(): string[] {
   return raw.split(",").map((o) => o.trim()).filter(Boolean);
 }
 
+function isTrustedLovableOrigin(origin: string): boolean {
+  try {
+    const url = new URL(origin);
+    if (url.protocol !== "https:") return false;
+    return url.hostname.endsWith(".lovable.app") || url.hostname.endsWith(".lovableproject.com");
+  } catch {
+    return false;
+  }
+}
+
 export function getCorsHeaders(req: Request): Record<string, string> {
   const allowedOrigins = buildAllowedOrigins();
 
@@ -19,7 +29,9 @@ export function getCorsHeaders(req: Request): Record<string, string> {
   }
 
   const origin = req.headers.get("origin") || "";
-  const matched = allowedOrigins.includes(origin) ? origin : allowedOrigins[0];
+  const matched = allowedOrigins.includes(origin) || isTrustedLovableOrigin(origin)
+    ? origin
+    : allowedOrigins[0];
   return {
     "Access-Control-Allow-Origin": matched,
     "Access-Control-Allow-Headers": ALLOW_HEADERS,
