@@ -894,18 +894,24 @@ export type Database = {
           instance_name: string
           integration_id: string
           org_id: string
+          phone_number: string | null
+          status: string
         }
         Insert: {
           created_at?: string | null
           instance_name: string
           integration_id: string
           org_id: string
+          phone_number?: string | null
+          status?: string
         }
         Update: {
           created_at?: string | null
           instance_name?: string
           integration_id?: string
           org_id?: string
+          phone_number?: string | null
+          status?: string
         }
         Relationships: [
           {
@@ -967,6 +973,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      invitations: {
+        Row: {
+          created_at: string | null
+          email: string
+          expires_at: string | null
+          id: string
+          invited_by: string | null
+          token: string
+          used_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          email: string
+          expires_at?: string | null
+          id?: string
+          invited_by?: string | null
+          token?: string
+          used_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          email?: string
+          expires_at?: string | null
+          id?: string
+          invited_by?: string | null
+          token?: string
+          used_at?: string | null
+        }
+        Relationships: []
       }
       leads_raw: {
         Row: {
@@ -1172,6 +1208,39 @@ export type Database = {
         }
         Relationships: []
       }
+      platform_admins: {
+        Row: {
+          created_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      platform_settings: {
+        Row: {
+          key: string
+          updated_at: string | null
+          value: string | null
+        }
+        Insert: {
+          key: string
+          updated_at?: string | null
+          value?: string | null
+        }
+        Update: {
+          key?: string
+          updated_at?: string | null
+          value?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -1319,13 +1388,30 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      create_invitation: { Args: { p_email: string }; Returns: Json }
+      create_organization_for_user: {
+        Args: { org_name: string }
+        Returns: Json
+      }
+      get_admin_overview: { Args: never; Returns: Json }
+      get_invitation_by_token: { Args: { p_token: string }; Returns: Json }
+      get_platform_settings: {
+        Args: never
+        Returns: {
+          key: string
+          updated_at: string
+          value: string
+        }[]
+      }
       get_user_org_id: { Args: { p_user_id: string }; Returns: string }
+      has_valid_invitation: { Args: { p_user_id: string }; Returns: boolean }
       increment_customer_msg_count: {
         Args: { p_conv_id: string }
         Returns: undefined
       }
       is_org_admin: { Args: { p_org_id: string }; Returns: boolean }
       is_org_member: { Args: { p_org_id: string }; Returns: boolean }
+      is_super_admin: { Args: never; Returns: boolean }
       match_knowledge_docs: {
         Args: {
           match_count?: number
@@ -1339,6 +1425,11 @@ export type Database = {
           similarity: number
           title: string
         }[]
+      }
+      redeem_invitation: { Args: { p_token: string }; Returns: Json }
+      set_platform_setting: {
+        Args: { p_key: string; p_value: string }
+        Returns: undefined
       }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }
