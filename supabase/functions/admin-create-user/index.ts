@@ -64,67 +64,88 @@ Deno.serve(async (req) => {
     let password: string | null = null;
 
     if (existing_user_id) {
-      // Approve existing user — just create org for them
+      // Approve existing user — idempotent: create org only if they don't already have one
       userId = existing_user_id;
-      userEmail = email || existing_user_id;
 
-      // Check if user already has an org
-      const { data: profile } = await supabaseAdmin
-        .from("profiles")
-        .select("org_id, full_name")
-        .eq("user_id", userId)
-        .maybeSingle();
+      // Fetch auth user to get canonical email
+      const { data: authUserRes } = await supabaseAdmin.auth.admin.getUserById(userId);
+      userEmail = email || authUserRes?.user?.email || "";
 
-      if (profile?.org_id) {
-        return new Response(
-          JSON.stringify({ error: "User already has an organization" }),
-          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
+      // Guard against duplicate approval: check profile OR any membership OR any owned org
+      const [{ data: profile }, { data: existingRole }, { data: existingOwnedOrg }] = await Promise.all([
+        supabaseAdmin.from("profiles").select("org_id, full_name").eq("user_id", userId).maybeSingle(),
+        supabaseAdmin.from("user_roles").select("org_id").eq("user_id", userId).neq("role", "admin").limit(1).maybeSingle(),
+        supabaseAdmin.from("organizations").select("id").eq("owner_id", userId).limit(1).maybeSingle(),
+      ]);
+
+      const existingOrgId = profile?.org_id || existingRole?.org_id || existingOwnedOrg?.id || null;
+
+      let orgId = existingOrgId;
+      if (!orgId) {
+        const userName = full_name || profile?.full_name || (userEmail ? userEmail.split("@")[0] : "Organização");
+        const { data: org, error: orgError } = await supabaseAdmin
+          .from("organizations")
+          .insert({ name: userName, owner_id: userId })
+          .select()
+          .single();
+        if (orgError) {
+          console.error("Org creation error:", orgError);
+          return new Response(
+            JSON.stringify({ error: orgError.message }),
+            { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        }
+        orgId = org.id;
+
+        // Default CRM stages for the new org
+        const defaultStages = [
+          { name: "Novo Lead", stage_order: 0, org_id: orgId },
+          { name: "Qualificação", stage_order: 1, org_id: orgId },
+          { name: "Proposta", stage_order: 2, org_id: orgId },
+          { name: "Negociação", stage_order: 3, org_id: orgId },
+          { name: "Fechado", stage_order: 4, org_id: orgId },
+        ];
+        await supabaseAdmin.from("crm_stages").insert(defaultStages);
       }
 
-      const userName = full_name || profile?.full_name || userEmail.split("@")[0];
-
-      // Create organization
-      const { data: org, error: orgError } = await supabaseAdmin
-        .from("organizations")
-        .insert({ name: userName, owner_id: userId })
-        .select()
-        .single();
-
-      if (orgError) {
-        console.error("Org creation error:", orgError);
-        return new Response(
-          JSON.stringify({ error: orgError.message }),
-          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-      }
-
-      // Update profile with org_id
+      // Upsert profile so admin-list-users sees org_id and stops flagging as pending
       await supabaseAdmin
         .from("profiles")
-        .update({ org_id: org.id })
-        .eq("user_id", userId);
+        .upsert(
+          { user_id: userId, org_id: orgId, full_name: full_name || profile?.full_name || null },
+          { onConflict: "user_id" }
+        );
 
-      // Add member role
-      await supabaseAdmin
+      // Ensure member role exists (idempotent)
+      const { data: hasMemberRole } = await supabaseAdmin
         .from("user_roles")
-        .insert({ user_id: userId, org_id: org.id, role: "member" });
+        .select("id")
+        .eq("user_id", userId)
+        .eq("org_id", orgId)
+        .eq("role", "member")
+        .maybeSingle();
+      if (!hasMemberRole) {
+        await supabaseAdmin
+          .from("user_roles")
+          .insert({ user_id: userId, org_id: orgId, role: "member" });
+      }
 
-      // Create default CRM stages
-      const defaultStages = [
-        { name: "Novo Lead", stage_order: 0, org_id: org.id },
-        { name: "Qualificação", stage_order: 1, org_id: org.id },
-        { name: "Proposta", stage_order: 2, org_id: org.id },
-        { name: "Negociação", stage_order: 3, org_id: org.id },
-        { name: "Fechado", stage_order: 4, org_id: org.id },
-      ];
-      await supabaseAdmin.from("crm_stages").insert(defaultStages);
+      // Mark invitation as used so InvitationGate lets the user in
+      if (userEmail) {
+        await supabaseAdmin
+          .from("invitations")
+          .upsert(
+            { email: userEmail, invited_by: caller.id, used_at: new Date().toISOString() },
+            { onConflict: "email" }
+          );
+      }
 
       return new Response(
-        JSON.stringify({ success: true, user_id: userId, email: userEmail, plan }),
+        JSON.stringify({ success: true, user_id: userId, email: userEmail, org_id: orgId, plan, already_approved: Boolean(existingOrgId) }),
         { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
+
 
     // Create new user
     password = temp_password || Math.random().toString(36).slice(-10) + "A1!";
