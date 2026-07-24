@@ -179,18 +179,29 @@ Deno.serve(async (req) => {
       console.error("Org creation error:", orgError);
     }
 
-    // Update profile with org_id
+    // Upsert profile with org_id (profile row may not exist yet)
     if (org) {
       await supabaseAdmin
         .from("profiles")
-        .update({ org_id: org.id, full_name: full_name || "" })
-        .eq("user_id", userId);
+        .upsert(
+          { user_id: userId, org_id: org.id, full_name: full_name || "" },
+          { onConflict: "user_id" }
+        );
 
       // Add member role
       await supabaseAdmin
         .from("user_roles")
         .insert({ user_id: userId, org_id: org.id, role: "member" });
+
+      // Mark invitation as used so InvitationGate lets the user in
+      await supabaseAdmin
+        .from("invitations")
+        .upsert(
+          { email: userEmail, invited_by: caller.id, used_at: new Date().toISOString() },
+          { onConflict: "email" }
+        );
     }
+
 
     return new Response(
       JSON.stringify({
